@@ -1,6 +1,6 @@
 /*
 Speeduino - Simple engine management for the Arduino Mega 2560 platform
-Copyright (C) Josh Stewart
+Copyright (C) Josh Stewartd
 A full copy of the license may be found in the projects root directory
 */
 #include "sensors.h"
