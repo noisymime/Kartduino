@@ -108,7 +108,7 @@ static inline byte correctionWUE()
   else
   {
     BIT_SET(currentStatus.engine, BIT_ENGINE_WARMUP);
-    WUEValue = table2D_getValue(&WUETable, currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET);
+    WUEValue = table2D_getValue(&WUETable, (int)currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET);
   }
 
   return WUEValue;
@@ -124,7 +124,7 @@ static inline byte correctionCranking()
   //if ( BIT_CHECK(currentStatus.engine, BIT_ENGINE_CRANK) ) { crankingValue = 100 + configPage2.crankingPct; }
   if ( BIT_CHECK(currentStatus.engine, BIT_ENGINE_CRANK) )
   {
-    crankingValue = table2D_getValue(&crankingEnrichTable, currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET);
+    crankingValue = table2D_getValue(&crankingEnrichTable, (int)currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET);
   }
   return crankingValue;
 }
@@ -140,10 +140,10 @@ static inline byte correctionASE()
   //Two checks are requiredL:
   //1) Is the engine run time less than the configured ase time
   //2) Make sure we're not still cranking
-  if ( (currentStatus.runSecs < (table2D_getValue(&ASECountTable, currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET))) && !(BIT_CHECK(currentStatus.engine, BIT_ENGINE_CRANK)) )
+  if ( (currentStatus.runSecs < (table2D_getValue(&ASECountTable, (int)currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET))) && !(BIT_CHECK(currentStatus.engine, BIT_ENGINE_CRANK)) )
   {
     BIT_SET(currentStatus.engine, BIT_ENGINE_ASE); //Mark ASE as active.
-    ASEValue = 100 + table2D_getValue(&ASETable, currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET);
+    ASEValue = 100 + table2D_getValue(&ASETable, (int)currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET);
   }
   else
   {
@@ -506,7 +506,7 @@ static inline int8_t correctionCLTadvance(int8_t advance)
 {
   int8_t ignCLTValue = advance;
   //Adjust the advance based on CLT.
-  int8_t advanceCLTadjust = (int16_t)(table2D_getValue(&CLTAdvanceTable, currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET)) - 15;
+  int8_t advanceCLTadjust = (int16_t)(table2D_getValue(&CLTAdvanceTable, (int)currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET)) - 15;
   ignCLTValue = (advance + advanceCLTadjust);
   
   return ignCLTValue;
