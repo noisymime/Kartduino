@@ -114,6 +114,7 @@
 
 #define MS_IN_MINUTE 60000
 #define US_IN_MINUTE 60000000
+#define US_IN_SECOND 1000000
 
 //Define the load algorithm
 #define LOAD_SOURCE_MAP         0
@@ -463,6 +464,8 @@ extern byte resetControl;
 extern volatile byte TIMER_mask;
 extern volatile byte LOOP_TIMER;
 
+extern volatile uint32_t injectionTimeAccumulator;
+
 //These functions all do checks on a pin to determine if it is already in use by another (higher importance) function
 #define pinIsInjector(pin)  ( ((pin) == pinInjector1) || ((pin) == pinInjector2) || ((pin) == pinInjector3) || ((pin) == pinInjector4) || ((pin) == pinInjector5) || ((pin) == pinInjector6) || ((pin) == pinInjector7) || ((pin) == pinInjector8) )
 #define pinIsIgnition(pin)  ( ((pin) == pinCoil1) || ((pin) == pinCoil2) || ((pin) == pinCoil3) || ((pin) == pinCoil4) || ((pin) == pinCoil5) || ((pin) == pinCoil6) || ((pin) == pinCoil7) || ((pin) == pinCoil8) )
@@ -576,6 +579,7 @@ struct statuses {
   byte fuelPressure; /**< Fuel pressure in PSI */
   byte oilPressure; /**< Oil pressure in PSI */
   byte engineProtectStatus;
+  uint16_t injectionTimeTotalSeconds;
 };
 
 /**
