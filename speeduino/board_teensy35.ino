@@ -154,7 +154,17 @@ void initBoard()
     * Timers
     */
     //Uses the PIT timer on Teensy.
-    lowResTimer.begin(oneMSInterval, 1000);
+    //lowResTimer.begin(oneMSInterval, 1000);
+    SIM_SCGC6 |= SIM_SCGC6_PIT; // enable PIT clock (60MHz)
+    uint16_t bugWorkaround = PIT_MCR;    // e7914, Mask 1N83J, Errata
+    PIT_MCR = 0;                // enable PIT
+
+    // Use PIT0 for 1mS interval   (free running)
+    PIT_LDVAL0 = 0xEA5F; // 1mS (count down by 60,000 - 1)
+    PIT_TFLG0 = 1;       // clear any interrupts
+    NVIC_ENABLE_IRQ(IRQ_PIT_CH0);
+    PIT_TCTRL0 |= PIT_TCTRL_TIE; // enable interrupt;
+    PIT_TCTRL0 |= PIT_TCTRL_TEN; // timer 0 enable
 
     /*
     ***********************************************************************************************************
@@ -301,4 +311,9 @@ uint16_t freeRam()
     return (uint16_t)stackTop - heapTop;
 }
 
+void pit0_isr() // free running one mS timer
+{
+  PIT_TFLG0 = 1; // clear interrupt - loads timer value, restarts timer countdown
+  oneMSInterval();
+}
 #endif

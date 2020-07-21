@@ -316,11 +316,14 @@ void loop()
           } //Channel type
         } //For loop going through each channel
       } //aux channels are enabled
-    } //4Hz timer
+} //4Hz timer
     if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_1HZ)) //Once per second)
     {
       BIT_CLEAR(TIMER_mask, BIT_TIMER_1HZ);
       readBaro(); //Infrequent baro readings are not an issue.
+#if defined(CORE_TEENSY) //debug purpose, only visal for running code
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+#endif
     } //1Hz timer
 
     if( (configPage6.iacAlgorithm == IAC_ALGORITHM_STEP_OL) || (configPage6.iacAlgorithm == IAC_ALGORITHM_STEP_CL) )  { idleControl(); } //Run idlecontrol every loop for stepper idle.

@@ -64,6 +64,7 @@ void openInjector4and8() { openInjector4(); openInjector8(); }
 void closeInjector4and8() { closeInjector4(); closeInjector8(); }
 
 #ifndef USE_MC33810
+
   inline void beginCoil1Charge() { digitalWrite(pinCoil1, coilHIGH); tachoOutputFlag = READY; }
   inline void endCoil1Charge() { digitalWrite(pinCoil1, coilLOW); }
 

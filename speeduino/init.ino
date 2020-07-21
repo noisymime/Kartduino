@@ -2048,7 +2048,116 @@ void setPinMapping(byte boardID)
 
       #endif
       break;
-    
+  
+    #if defined(CORE_TEENSY35)
+    case 57:
+      //Pin mappings as per the teensy 3.5 X3V0.2 board shield
+      // firing order 1-3-4-2 (only affects injectors - using wasted spark)
+
+      pinInjector1 = 8; // HW INJ1
+      pinInjector2 = 6; // HW INJ3
+      pinInjector3 = 5; // HW INJ4
+      pinInjector4 = 7; // HW INJ2
+
+      pinCoil1 = 36;    // fire 1 & 3
+      pinCoil2 = 37;    // fire 2 & 4
+
+      pinTrigger = 15;  // Crank Sensor 
+      pinTrigger2 = 19; // Cam Sensor 
+
+      pinIAT = A4;      // 18 IAT sensor 
+      pinTPS = A6;      // 20 TPS input 
+      pinCLT = A7;      // 21 CLT sensor 
+      pinO2 =  A8;      // 22 Hego sensor 
+      pinMAP = A9;      // 23 MAP sensor 
+      pinBat = A12;     // 31 Battery reference voltage 
+
+      pinIdle1 = 9;     // Single wire idle control 
+      pinIdle2 = 10;    // Two wire idle control 
+      pinVSS = 16;      // Vehicle Speed Sensor 
+      pinFan = 24;      // Fan output 
+      pinKnockWin = 25; // TPIC8101 integrate/hold
+      pinTachOut = 26;  // Tacho output 
+      pinFuelPump = 27; // Fuel pump output 
+
+      SCK0 = 14;        // alternate clock - leave 13 for LED
+      CS0 = 32;         // TPIC8101 (knock) select
+
+      // pin1 RX1
+      // pin2 TX1
+      // pin11 MOSI0
+      // pin12 MISO0
+      // pin3 can0TX 
+      // pin4 can0RX 
+      // Trigger angle = 240 deg
+      // injector rate = 170 cc/min
+
+      break;
+ 
+      case 58:
+      //Pin mappings as per the teensy 3.5 FV6.0 board shield
+      pinInjector1 = 5;
+      pinInjector2 = 6;
+      pinInjector3 = 7;
+      pinInjector4 = 8;
+      pinInjector5 = 9;
+      pinInjector6 = 10;
+      pinInjector7 = 22;
+      pinInjector8 = 23;
+
+      pinCoil1 = 21;
+      pinCoil2 = 20;
+      pinCoil3 = 19;
+      pinCoil4 = 18;
+      pinCoil5 = 17;
+      pinCoil6 = 16;
+      pinCoil7 = 30;
+      pinCoil8 = 31;      
+
+      pinCLT  = A10;    // A10 CLT sensor 
+      pinIAT  = A11;    // A11 IAT sensor 
+      pinMAP  = A15;    // 34 MAP sensor 
+      pinO2   = A21;    // A21 O2 sensor 
+      pinBat  = A22;    // A22 Battery reference voltage 
+      pinO2_2 = A23;    // 49 O2-2 sensor 
+      pinEMAP = A25;    // A24
+      pinBaro = A26;    // A26 Baro sensor 
+
+      pinTachOut  = 2;  // Tacho output 
+      SCK0        = 14; // Flash, Knock and Throttle Clock (alternate clock)
+      pinKnockWin = 24; // Integrate/Hold for TPIC8101
+      pinLaunch   = 25; // Launch input
+      pinTrigger  = 26; // Crank sensor 
+      pinTrigger3 = 27; // ICam Sensor      
+      pinTrigger2 = 28; // ECam Sensor 
+      pinIMCC     = 29; // Intake Manifold Charge Control (Ford L6 Barra)        
+      pinFan      = 35; // Fan output
+      pinFuelPump = 36; // Fuel pump output
+      pinVVT_1    = 37; // VVT1 output
+      pinVVT_2    = 38; // VVT2 output
+      pinVSS      = 39; // Vehicle Speed Control
+// pinTPS  = A20;  // 39 - alt source of TPS for bench testing without DriveByWire
+      pinFlex     = 47; // Flex sensor input
+      pinBoost    = 48; // Boost control output
+      pinIdleUp   = 50; // Idle Up output
+
+      // reserved pins
+      CS0      = 32;         // Chip Select; Knock
+      CS1      = 33;         // Chip select; Flash
+      CS2      = 15;         // Chip select; DriveByWire Throttle
+      // RX1   = 0
+      // RX2   = 1
+      // CANTX = 3
+      // CANRX = 4
+      // MOSI0 = 11 
+      // MISO0 = 12
+      // LED   = 13
+
+      // trigger angle = 300
+      // injector rate = ?? cc/pin
+      break;    
+    #endif
+  
    #if defined(ARDUINO_BLACK_F407VE)
     case 60:
        //Pin definitions for experimental board Tjeerd 
@@ -2380,6 +2489,8 @@ void setPinMapping(byte boardID)
   pinMode(pinIdle1, OUTPUT);
   pinMode(pinIdle2, OUTPUT);
   pinMode(pinFuelPump, OUTPUT);
+  pinMode(pinIMCC, OUTPUT);   // intake manifold charge control
+  pinMode(pinKnockWin, OUTPUT);
   pinMode(pinIgnBypass, OUTPUT);
   pinMode(pinFan, OUTPUT);
   pinMode(pinStepperDir, OUTPUT);
@@ -2387,6 +2498,10 @@ void setPinMapping(byte boardID)
   pinMode(pinStepperEnable, OUTPUT);
   pinMode(pinBoost, OUTPUT);
   pinMode(pinVVT_1, OUTPUT);
+  pinMode(pinVVT_2, OUTPUT);
+  pinMode(CS0, OUTPUT);  // Chip Select; Knock
+  pinMode(CS1, OUTPUT);  // Chip select; Flash
+  pinMode(CS2, OUTPUT);  // Chip select; FlyByWire Throttle
 
   //This is a legacy mode option to revert the MAP reading behaviour to match what was in place prior to the 201905 firmware
   if(configPage2.legacyMAP > 0) { digitalWrite(pinMAP, HIGH); }

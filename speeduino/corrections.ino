@@ -770,7 +770,6 @@ int8_t correctionSoftFlatShift(int8_t advance)
 int8_t correctionKnock(int8_t advance)
 {
   byte knockRetard = 0;
-
   //First check is to do the window calculations (ASsuming knock is enabled)
   if( configPage10.knock_mode != KNOCK_MODE_OFF )
   {
@@ -796,9 +795,7 @@ int8_t correctionKnock(int8_t advance)
         knockRetard = configPage10.knock_firstStep;
       }
     }
-
   }
-
   return advance - knockRetard;
 }
 

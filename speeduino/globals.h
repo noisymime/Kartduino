@@ -1197,6 +1197,12 @@ extern byte pinBaro; //Pin that an external barometric pressure sensor is attach
 extern byte pinResetControl; // Output pin used control resetting the Arduino
 extern byte pinFuelPressure;
 extern byte pinOilPressure;
+extern byte pinKnockWin;
+extern byte pinIMCC;
+extern byte SCK0;
+extern byte CS0;
+extern byte CS1;
+extern byte CS2;
 #ifdef USE_MC33810
   //If the MC33810 IC\s are in use, these are the chip select pins
   extern byte pinMC33810_1_CS;
