@@ -2353,7 +2353,7 @@ void setPinMapping(byte boardID)
   if ( (configPage2.vssPin != 0) && (configPage2.vssPin < BOARD_NR_GPIO_PINS) ) { pinVSS = pinTranslate(configPage2.vssPin); }
   if ( (configPage10.fuelPressurePin != 0) && (configPage10.fuelPressurePin < BOARD_NR_GPIO_PINS) ) { pinFuelPressure = configPage10.fuelPressurePin + A0; }
   if ( (configPage10.oilPressurePin != 0) && (configPage10.oilPressurePin < BOARD_NR_GPIO_PINS) ) { pinOilPressure = configPage10.oilPressurePin + A0; }
-  
+  if ( (configPage9.oilSensorOPStPin != 0) && (configPage9.oilSensorOPStPin < BOARD_NR_GPIO_PINS)) { pinOilSensorOPSt = configPage9.oilSensorOPStPin; }  
   if ( (configPage10.wmiEmptyPin != 0) && (configPage10.wmiEmptyPin < BOARD_NR_GPIO_PINS) ) { pinWMIEmpty = pinTranslate(configPage10.wmiEmptyPin); }
   if ( (configPage10.wmiIndicatorPin != 0) && (configPage10.wmiIndicatorPin < BOARD_NR_GPIO_PINS) ) { pinWMIIndicator = pinTranslate(configPage10.wmiIndicatorPin); }
   if ( (configPage10.wmiEnabledPin != 0) && (configPage10.wmiEnabledPin < BOARD_NR_GPIO_PINS) ) { pinWMIEnabled = pinTranslate(configPage10.wmiEnabledPin); }
@@ -2556,9 +2556,13 @@ void setPinMapping(byte boardID)
   {
     pinMode(pinFuelPressure, INPUT);
   }
-  if(configPage10.oilPressureEnable > 0)
+  if(configPage10.oilPressureEnable == 1)
   {
     pinMode(pinOilPressure, INPUT);
+  } 
+  else if (configPage10.oilPressureEnable == 2)
+  {
+    pinMode(pinOilSensorOPSt, INPUT);   
   }
   if(configPage10.wmiEnabled > 0)
   {
@@ -2582,6 +2586,8 @@ void setPinMapping(byte boardID)
   triggerSec_pin_mask = digitalPinToBitMask(pinTrigger2);
   flex_pin_port = portInputRegister(digitalPinToPort(pinFlex));
   flex_pin_mask = digitalPinToBitMask(pinFlex);
+  oilSensorOPSt_pin_port = portInputRegister(digitalPinToPort(pinOilSensorOPSt));
+  oilSensorOPSt_pin_mask = digitalPinToBitMask(pinOilSensorOPSt);
 
 }
 

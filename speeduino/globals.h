@@ -442,6 +442,9 @@ extern volatile PINMASK_TYPE triggerPri_pin_mask;
 extern volatile PORT_TYPE *triggerSec_pin_port;
 extern volatile PINMASK_TYPE triggerSec_pin_mask;
 
+extern volatile PORT_TYPE *oilSensorOPSt_pin_port;
+extern volatile PINMASK_TYPE oilSensorOPSt_pin_mask;
+
 //These need to be here as they are used in both speeduino.ino and scheduler.ino
 extern bool channel1InjEnabled;
 extern bool channel2InjEnabled;
@@ -625,6 +628,7 @@ struct statuses {
   byte gear; /**< Current gear (Calculated from vss) */
   byte fuelPressure; /**< Fuel pressure in PSI */
   byte oilPressure; /**< Oil pressure in PSI */
+  byte oilTemperature; /* Oil Temperature in Celsius */
   byte engineProtectStatus;
   byte wmiPW;
   bool wmiEmpty;
@@ -1005,9 +1009,13 @@ struct config9 {
   uint8_t canoutput_param_start_byte[8];
   byte canoutput_param_num_bytes[8];
 
-  byte unused10_110;
-  byte unused10_111;
-  byte unused10_112;
+  byte oilTemperatureEnable : 1;
+  byte oilTemperaturePin : 4;
+  byte oilTemperatureFault : 1;
+  byte unused10_110 : 2;
+  int8_t oilTemperatureMin;
+  byte oilTemperatureMax;
+
   byte unused10_113;
   byte speeduino_tsCanId:4;         //speeduino TS canid (0-14)
   uint16_t true_address;            //speeduino 11bit can address
@@ -1021,7 +1029,9 @@ struct config9 {
 
   byte iacMaxSteps; // Step limit beyond which the stepper won't be driven. Should always be less than homing steps. Stored div 3 as per home steps.
 
-  byte unused10_155;
+  byte oilSensorOPStPin : 6;
+
+  byte unused10_155 : 2;
   byte unused10_156;
   byte unused10_157;
   byte unused10_158;
@@ -1175,9 +1185,9 @@ struct config10 {
   byte crankingEnrichTaper; //Byte 134
 
   byte fuelPressureEnable : 1;
-  byte oilPressureEnable : 1;
+  byte oilPressureEnable : 2;
   byte oilPressureProtEnbl : 1;
-  byte unused10_135 : 5;
+  byte unused10_136 : 4;
 
   byte fuelPressurePin : 4;
   byte oilPressurePin : 4;
@@ -1189,6 +1199,7 @@ struct config10 {
 
   byte oilPressureProtRPM[4];
   byte oilPressureProtMins[4];
+  
 
   byte wmiEnabled : 1; // Byte 149
   byte wmiMode : 6;
@@ -1237,7 +1248,7 @@ struct config10 {
   byte spark2InputPolarity : 1;
   byte spark2InputPullup : 1;
 
-  byte unused11_187_191[2]; //Bytes 187-191
+  byte unused10_190_191[2];
 
 #if defined(CORE_AVR)
   };
@@ -1348,6 +1359,7 @@ extern byte pinBaro; //Pin that an external barometric pressure sensor is attach
 extern byte pinResetControl; // Output pin used control resetting the Arduino
 extern byte pinFuelPressure;
 extern byte pinOilPressure;
+extern byte pinOilSensorOPSt;
 extern byte pinWMIEmpty; // Water tank empty sensor
 extern byte pinWMIIndicator; // No water indicator bulb
 extern byte pinWMIEnabled; // ON-OFF ouput to relay/pump/solenoid 
