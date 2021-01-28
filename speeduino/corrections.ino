@@ -718,7 +718,7 @@ int8_t correctionWMITiming(int8_t advance)
 
 int8_t correctionIATretard(int8_t advance)
 {
-  byte ignIATValue = advance;
+  byte ignIATValue;
   //Adjust the advance based on IAT. If the adjustment amount is greater than the current advance, just set advance to 0
   int8_t advanceIATadjust = table2D_getValue(&IATRetardTable, currentStatus.IAT);
   int tempAdvance = (advance - advanceIATadjust);
@@ -730,7 +730,7 @@ int8_t correctionIATretard(int8_t advance)
 
 int8_t correctionCLTadvance(int8_t advance)
 {
-  int8_t ignCLTValue = advance;
+  int8_t ignCLTValue;
   //Adjust the advance based on CLT.
   int8_t advanceCLTadjust = (int16_t)(table2D_getValue(&CLTAdvanceTable, currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET)) - 15;
   ignCLTValue = (advance + advanceCLTadjust);
