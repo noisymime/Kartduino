@@ -309,7 +309,7 @@ void doUpdates()
     configPage10.crankingEnrichValues[3] = configPage10.crankingEnrichValues[3] / 5;
 
     //Added the injector timing curve
-    //Set all the values to be the same as the first one. 
+    //Set all the values to be the same as the first one.
     configPage2.injAng[0] = configPage2.injAng[0]; //Obviously not needed, but here for completeness
     configPage2.injAng[1] = configPage2.injAng[0];
     configPage2.injAng[2] = configPage2.injAng[0];
@@ -373,9 +373,10 @@ void doUpdates()
     //202008
 
     //MAJOR update to move the coolant, IAT and O2 calibrations to 2D tables
-    int y;
     for(int x=0; x<(CALIBRATION_TABLE_SIZE/16); x++) //Each calibration table is 512 bytes long
     {
+      int y;
+
       y = EEPROM_CALIBRATION_CLT_OLD + (x * 16);
       cltCalibration_values[x] = EEPROM.read(y);
       cltCalibration_bins[x] = (x * 32);

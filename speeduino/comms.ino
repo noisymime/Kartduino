@@ -2170,7 +2170,6 @@ void receiveCalibration(byte tableID)
   }
 
   int16_t tempValue;
-  byte tempBuffer[2];
 
   if(tableID == 2)
   {
@@ -2190,6 +2189,8 @@ void receiveCalibration(byte tableID)
   }
   else
   {
+    byte tempBuffer[2];
+
     //Temperature calibrations are sent as 32 16-bit values
     for (uint16_t x = 0; x < 32; x++)
     {

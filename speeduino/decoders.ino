@@ -1465,11 +1465,12 @@ uint16_t getRPM_4G63()
   {
     if( (currentStatus.RPM < currentStatus.crankRPM)  )
     {
-      int tempToothAngle;
-      unsigned long toothTime;
       if( (toothLastToothTime == 0) || (toothLastMinusOneToothTime == 0) ) { tempRPM = 0; }
       else
       {
+        int tempToothAngle;
+        unsigned long toothTime;
+
         noInterrupts();
         tempToothAngle = triggerToothAngle;
         toothTime = (toothLastToothTime - toothLastMinusOneToothTime); //Note that trigger tooth angle changes between 70 and 110 depending on the last tooth that was seen (or 70/50 for 6 cylinders)
@@ -3217,12 +3218,13 @@ uint16_t getRPM_Harley()
   {
     if ( currentStatus.RPM < (unsigned int)(configPage4.crankRPM * 100) )
     {
-      // Kein Unterschied mit dieser Option
-      int tempToothAngle;
-      unsigned long toothTime;
+      // No difference with this option
       if ( (toothLastToothTime == 0) || (toothLastMinusOneToothTime == 0) ) { tempRPM = 0; }
       else
       {
+        int tempToothAngle;
+        unsigned long toothTime;
+
         noInterrupts();
         tempToothAngle = triggerToothAngle;
         /* High-res mode

@@ -49,10 +49,11 @@ void clearError(byte errorID)
 byte getNextError()
 {
   packedError currentError;
-  byte currentErrorNum = 0;
 
   if(errorCount > 0)
   {
+    byte currentErrorNum = 0;
+
     //We alternate through the errors once per second
     currentErrorNum = currentStatus.secl % errorCount; //Which error number will be returned. This changes once per second. 
 

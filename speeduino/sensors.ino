@@ -593,10 +593,11 @@ byte getGear()
 byte getFuelPressure()
 {
   int16_t tempFuelPressure = 0;
-  uint16_t tempReading;
 
   if(configPage10.fuelPressureEnable > 0)
   {
+    uint16_t tempReading;
+
     //Perform ADC read
     tempReading = analogRead(pinFuelPressure);
     tempReading = analogRead(pinFuelPressure);
@@ -614,10 +615,11 @@ byte getFuelPressure()
 byte getOilPressure()
 {
   int16_t tempOilPressure = 0;
-  uint16_t tempReading;
 
   if(configPage10.oilPressureEnable > 0)
   {
+    uint16_t tempReading;
+
     //Perform ADC read
     tempReading = analogRead(pinOilPressure);
     tempReading = analogRead(pinOilPressure);

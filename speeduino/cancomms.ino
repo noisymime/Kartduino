@@ -33,9 +33,10 @@ void secondserial_Command()
         break;
 
     case 'G': // this is the reply command sent by the Can interface
-       byte destcaninchannel;
       if (CANSerial.available() >= 9)
       {
+        byte destcaninchannel;
+
         canCmdPending = false;
         cancmdfail = CANSerial.read();        //0 == fail,  1 == good.
         destcaninchannel = CANSerial.read();  // the input channel that requested the data value
@@ -103,16 +104,18 @@ void secondserial_Command()
         break;
 
     case 'r': //New format for the optimised OutputChannels over CAN
-      byte Cmd;
       if (CANSerial.available() >= 6)
       {
+        byte Cmd;
+
         CANSerial.read(); //Read the $tsCanId
         Cmd = CANSerial.read();
 
-        uint16_t offset, length;
         if( (Cmd == 0x30) || ( (Cmd >= 0x40) && (Cmd <0x50) ) ) //Send output channels command 0x30 is 48dec, 0x40(64dec)-0x4F(79dec) are external can request
         {
+          uint16_t offset, length;
           byte tmp;
+
           tmp = CANSerial.read();
           offset = word(CANSerial.read(), tmp);
           tmp = CANSerial.read();

@@ -383,11 +383,11 @@ void nitrousControl()
 // Water methanol injection control
 void wmiControl()
 {
-  int wmiPW = 0;
-  
   // wmi can only work when vvt is disabled 
   if( (configPage6.vvtEnabled == 0) && (configPage10.wmiEnabled >= 1) )
   {
+    int wmiPW = 0;
+
     currentStatus.wmiEmpty = WMI_TANK_IS_EMPTY();
     if(currentStatus.wmiEmpty == 0)
     {
