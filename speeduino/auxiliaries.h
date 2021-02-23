@@ -80,8 +80,11 @@ long vvt1_pwm_value;
 long vvt2_pwm_value;
 long vvt_pid_target_angle;
 //long vvt_pid_current_angle;
+
+#if !defined (CORE_AVR)
 static inline void boostInterrupt();
 static inline void vvtInterrupt();
+#endif
 
 
 #endif

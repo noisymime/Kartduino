@@ -1979,7 +1979,7 @@ byte getPageValue(byte page, uint16_t valueAddress)
             //Boost table
             if(valueAddress < 64) { returnValue = boostTable.values[7 - (valueAddress / 8)][valueAddress % 8]; }
             else if(valueAddress < 72) { returnValue = byte(boostTable.axisX[(valueAddress - 64)] / TABLE_RPM_MULTIPLIER); }
-            else if(valueAddress < 80) { returnValue = byte(boostTable.axisY[7 - (valueAddress - 72)]); }
+            else { returnValue = byte(boostTable.axisY[7 - (valueAddress - 72)]); }
           }
           else if(valueAddress < 160)
           {
@@ -2009,7 +2009,7 @@ byte getPageValue(byte page, uint16_t valueAddress)
             //trim1 table
             if(valueAddress < 36) { returnValue = trim1Table.values[5 - (valueAddress / 6)][valueAddress % 6]; }
             else if(valueAddress < 42) { returnValue = byte(trim1Table.axisX[(valueAddress - 36)] / TABLE_RPM_MULTIPLIER); }
-            else if(valueAddress < 48) { returnValue = byte(trim1Table.axisY[5 - (valueAddress - 42)] / TABLE_LOAD_MULTIPLIER); }
+            else { returnValue = byte(trim1Table.axisY[5 - (valueAddress - 42)] / TABLE_LOAD_MULTIPLIER); }
           }
           else if(valueAddress < 96)
           {
@@ -2091,7 +2091,7 @@ byte getPageValue(byte page, uint16_t valueAddress)
         {
           if(valueAddress < 64) { returnValue = wmiTable.values[7 - (valueAddress / 8)][valueAddress % 8]; }
           else if(valueAddress < 72) { returnValue = byte(wmiTable.axisX[(valueAddress - 64)] / TABLE_RPM_MULTIPLIER); }
-          else if(valueAddress < 80) { returnValue = byte(wmiTable.axisY[7 - (valueAddress - 72)] / TABLE_LOAD_MULTIPLIER); }
+          else { returnValue = byte(wmiTable.axisY[7 - (valueAddress - 72)] / TABLE_LOAD_MULTIPLIER); }
         }
         else if(valueAddress < 184)
         {
@@ -2170,7 +2170,6 @@ void receiveCalibration(byte tableID)
   }
 
   int16_t tempValue;
-  byte tempBuffer[2];
 
   if(tableID == 2)
   {
@@ -2190,6 +2189,8 @@ void receiveCalibration(byte tableID)
   }
   else
   {
+    byte tempBuffer[2];
+
     //Temperature calibrations are sent as 32 16-bit values
     for (uint16_t x = 0; x < 32; x++)
     {

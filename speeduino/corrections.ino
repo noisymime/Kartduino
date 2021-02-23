@@ -130,21 +130,20 @@ This is the only function that should be called from anywhere outside the file
 static inline byte correctionsFuel_new()
 {
   uint32_t sumCorrections = 100;
-  byte numCorrections = 0;
 
   //The values returned by each of the correction functions are multipled together and then divided back to give a single 0-255 value.
-  currentStatus.wueCorrection = correctionWUE(); numCorrections++;
-  uint16_t correctionASEvalue = correctionASE(); numCorrections++;
-  uint16_t correctionCrankingValue = correctionCranking(); numCorrections++;
-  currentStatus.AEamount = correctionAccel(); numCorrections++;
-  uint8_t correctionFloodClearValue = correctionFloodClear(); numCorrections++;
-  currentStatus.egoCorrection = correctionAFRClosedLoop(); numCorrections++;
+  currentStatus.wueCorrection = correctionWUE();
+  uint16_t correctionASEvalue = correctionASE();
+  uint16_t correctionCrankingValue = correctionCranking();
+  currentStatus.AEamount = correctionAccel();
+  uint8_t correctionFloodClearValue = correctionFloodClear();
+  currentStatus.egoCorrection = correctionAFRClosedLoop();
 
-  currentStatus.batCorrection = correctionBatVoltage(); numCorrections++;
-  currentStatus.iatCorrection = correctionIATDensity(); numCorrections++;
-  currentStatus.baroCorrection = correctionBaro(); numCorrections++; 
-  currentStatus.flexCorrection = correctionFlex(); numCorrections++;
-  currentStatus.launchCorrection = correctionLaunch(); numCorrections++;
+  currentStatus.batCorrection = correctionBatVoltage();
+  currentStatus.iatCorrection = correctionIATDensity();
+  currentStatus.baroCorrection = correctionBaro();
+  currentStatus.flexCorrection = correctionFlex();
+  currentStatus.launchCorrection = correctionLaunch();
 
   bitWrite(currentStatus.status1, BIT_STATUS1_DFCO, correctionDFCO());
   if ( BIT_CHECK(currentStatus.status1, BIT_STATUS1_DFCO) == 1 ) { sumCorrections = 0; }
@@ -224,12 +223,13 @@ uint16_t correctionCranking()
  */
 byte correctionASE()
 {
-  int16_t ASEValue;
   //Two checks are requiredL:
   //1) Is the engine run time less than the configured ase time
   //2) Make sure we're not still cranking
   if ( BIT_CHECK(TIMER_mask, BIT_TIMER_10HZ) || (currentStatus.ASEValue == 0) )
   {
+    int16_t ASEValue;
+
     if ( (currentStatus.runSecs < (table2D_getValue(&ASECountTable, currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET))) && !(BIT_CHECK(currentStatus.engine, BIT_ENGINE_CRANK)) )
     {
       BIT_SET(currentStatus.engine, BIT_ENGINE_ASE); //Mark ASE as active.
@@ -718,7 +718,7 @@ int8_t correctionWMITiming(int8_t advance)
 
 int8_t correctionIATretard(int8_t advance)
 {
-  byte ignIATValue = advance;
+  byte ignIATValue;
   //Adjust the advance based on IAT. If the adjustment amount is greater than the current advance, just set advance to 0
   int8_t advanceIATadjust = table2D_getValue(&IATRetardTable, currentStatus.IAT);
   int tempAdvance = (advance - advanceIATadjust);
@@ -730,7 +730,7 @@ int8_t correctionIATretard(int8_t advance)
 
 int8_t correctionCLTadvance(int8_t advance)
 {
-  int8_t ignCLTValue = advance;
+  int8_t ignCLTValue;
   //Adjust the advance based on CLT.
   int8_t advanceCLTadjust = (int16_t)(table2D_getValue(&CLTAdvanceTable, currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET)) - 15;
   ignCLTValue = (advance + advanceCLTadjust);

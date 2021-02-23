@@ -240,7 +240,7 @@ void checkProgrammableIO()
     firstCheck = false;
     secondCheck = false;
     if ( BIT_CHECK(pinIsValid, y) ) //if outputPin == 0 it is disabled
-    { 
+    {
       //byte theIndex = configPage13.firstDataIn[y];
       data = ProgrammableIOGetData(configPage13.firstDataIn[y]);
       data2 = configPage13.firstTarget[y];
@@ -296,10 +296,11 @@ void checkProgrammableIO()
 int16_t ProgrammableIOGetData(uint16_t index)
 {
   int16_t result;
-  uint8_t x;
+
   if ( index < LOG_ENTRY_SIZE )
   {
-    
+    uint8_t x;
+
     for(x = 0; x<sizeof(fsIntIndex); x++)
     {
       if (fsIntIndex[x] == index) { break; }
