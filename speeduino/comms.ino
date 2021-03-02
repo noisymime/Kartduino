@@ -762,7 +762,7 @@ byte getStatusEntry(uint16_t byteNum)
     case 20: statusValue = currentStatus.VE2; break; //VE 2 (%)
     case 21: statusValue = currentStatus.afrTarget; break;
     case 22: statusValue = currentStatus.tpsDOT; break; //TPS DOT
-    case 23: statusValue = currentStatus.advance; break;
+    case 23: statusValue = scaleCrankAngleDown(currentStatus.advance); break;
     case 24: statusValue = currentStatus.TPS; break; // TPS (0% to 100%)
     
     case 25: 
@@ -877,8 +877,8 @@ byte getStatusEntry(uint16_t byteNum)
     case 111: statusValue = currentStatus.outputsStatus; break;
     case 112: statusValue = (byte)(currentStatus.fuelTemp + CALIBRATION_TEMPERATURE_OFFSET); break; //Fuel temperature from flex sensor
     case 113: statusValue = currentStatus.fuelTempCorrection; break; //Fuel temperature Correction (%)
-    case 114: statusValue = currentStatus.advance1; break; //advance 1 (%)
-    case 115: statusValue = currentStatus.advance2; break; //advance 2 (%)
+    case 114: statusValue = scaleCrankAngleDown(currentStatus.advance1); break; //advance 1 (%)
+    case 115: statusValue = scaleCrankAngleDown(currentStatus.advance2); break; //advance 2 (%)
     case 116: statusValue = currentStatus.TS_SD_Status; break; //SD card status
   }
 
