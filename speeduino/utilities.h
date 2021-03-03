@@ -28,6 +28,8 @@ uint8_t pinIsValid = 0;
 void setResetControlPinState();
 byte pinTranslate(byte);
 uint32_t calculateCRC32(byte);
+void changeHalfToFullSync(void);
+void changeFullToHalfSync(void);
 void initialiseProgrammableIO();
 void checkProgrammableIO();
 int16_t ProgrammableIOGetData(uint16_t index);
