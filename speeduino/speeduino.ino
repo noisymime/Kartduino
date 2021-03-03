@@ -37,6 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "init.h"
 #include "utilities.h"
 #include "engineProtection.h"
+#include "scheduledIO.h"
 #include "secondaryTables.h"
 #include BOARD_H //Note that this is not a real file, it is defined in globals.h. 
 
@@ -381,7 +382,7 @@ void loop()
 
     //Always check for sync
     //Main loop runs within this clause
-    if (currentStatus.hasSync && (currentStatus.RPM > 0))
+    if ((currentStatus.hasSync || BIT_CHECK(currentStatus.status3, BIT_STATUS3_HALFSYNC)) && (currentStatus.RPM > 0))
     {
         if(currentStatus.startRevolutions >= configPage4.StgCycles)  { ignitionOn = true; fuelOn = true; } //Enable the fuel and ignition, assuming staging revolutions are complete
         //Check whether running or cranking
@@ -563,10 +564,20 @@ void loop()
           //injector2StartAngle = calculateInjector2StartAngle(PWdivTimerPerDegree);
           injector2StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel2InjDegrees);
 
-          if(configPage2.injLayout == INJ_SEQUENTIAL)
+          if((configPage2.injLayout == INJ_SEQUENTIAL) && currentStatus.hasSync)
           {
-            //injector3StartAngle = calculateInjector3StartAngle(PWdivTimerPerDegree);
-            //injector4StartAngle = calculateInjector4StartAngle(PWdivTimerPerDegree);
+            if(CRANK_ANGLE_MAX_INJ != 720)
+            {
+              inj1StartFunction = openInjector1;
+              inj1EndFunction = closeInjector1;
+              inj2StartFunction = openInjector2;
+              inj2EndFunction = closeInjector2;
+              channel3InjEnabled = true;
+              channel4InjEnabled = true;
+              CRANK_ANGLE_MAX_INJ = 720;
+              maxIgnOutputs = 4;
+              req_fuel_uS *= 2;
+            }
             injector3StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel3InjDegrees);
             injector4StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel4InjDegrees);
 
@@ -582,6 +593,18 @@ void loop()
               if (pw3percent != 100) { currentStatus.PW3 = (pw3percent * currentStatus.PW3) / 100; }
               if (pw4percent != 100) { currentStatus.PW4 = (pw4percent * currentStatus.PW4) / 100; }
             }
+          }
+          else if((configPage2.injLayout == INJ_SEQUENTIAL) && BIT_CHECK(currentStatus.status3, BIT_STATUS3_HALFSYNC) && (CRANK_ANGLE_MAX_INJ != 360))
+          {
+            inj1StartFunction = openInjector1and4;
+            inj1EndFunction = closeInjector1and4;
+            inj2StartFunction = openInjector2and3;
+            inj2EndFunction = closeInjector2and3;
+            channel3InjEnabled = false;
+            channel4InjEnabled = false;
+            CRANK_ANGLE_MAX_INJ = 360;
+            maxIgnOutputs = 2;
+            req_fuel_uS /= 2;
           }
           else if( (configPage10.stagingEnabled == true) && (currentStatus.PW3 > 0) )
           {
@@ -611,8 +634,23 @@ void loop()
           injector3StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel3InjDegrees);
           
           #if INJ_CHANNELS >= 6
-            if(configPage2.injLayout == INJ_SEQUENTIAL)
+            if((configPage2.injLayout == INJ_SEQUENTIAL) && currentStatus.hasSync)
             {
+              if(CRANK_ANGLE_MAX_INJ != 720)
+              {
+                inj1StartFunction = openInjector1;
+                inj1EndFunction = closeInjector1;
+                inj2StartFunction = openInjector2;
+                inj2EndFunction = closeInjector2;
+                inj3StartFunction = openInjector3;
+                inj3EndFunction = closeInjector3;
+                channel4InjEnabled = true;
+                channel5InjEnabled = true;
+                channel6InjEnabled = true;
+                CRANK_ANGLE_MAX_INJ = 720;
+                maxIgnOutputs = 6;
+                req_fuel_uS *= 2;
+              }
               injector4StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel4InjDegrees);
               injector5StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel5InjDegrees);
               injector6StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel6InjDegrees);
@@ -634,6 +672,21 @@ void loop()
                 if (pw6percent != 100) { currentStatus.PW6 = (pw6percent * currentStatus.PW6) / 100; }
               }
             }
+            else if((configPage2.injLayout == INJ_SEQUENTIAL) && BIT_CHECK(currentStatus.status3, BIT_STATUS3_HALFSYNC) && (CRANK_ANGLE_MAX_INJ != 360))
+            {
+              inj1StartFunction = openInjector1and4;
+              inj1EndFunction = closeInjector1and4;
+              inj2StartFunction = openInjector2and5;
+              inj2EndFunction = closeInjector2and5;
+              inj3StartFunction = openInjector3and6;
+              inj3EndFunction = closeInjector3and6;
+              channel4InjEnabled = false;
+              channel5InjEnabled = false;
+              channel6InjEnabled = false;
+              CRANK_ANGLE_MAX_INJ = 360;
+              maxIgnOutputs = 3;
+              req_fuel_uS /= 2;
+            }
           #endif
           break;
         //8 cylinders
@@ -649,8 +702,26 @@ void loop()
           injector4StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel4InjDegrees);
 
           #if INJ_CHANNELS >= 8
-            if(configPage2.injLayout == INJ_SEQUENTIAL)
+            if((configPage2.injLayout == INJ_SEQUENTIAL) && currentStatus.hasSync)
             {
+              if(CRANK_ANGLE_MAX_INJ != 720)
+              {
+                inj1StartFunction = openInjector1;
+                inj1EndFunction = closeInjector1;
+                inj2StartFunction = openInjector2;
+                inj2EndFunction = closeInjector2;
+                inj3StartFunction = openInjector3;
+                inj3EndFunction = closeInjector3;
+                inj4StartFunction = openInjector4;
+                inj4EndFunction = closeInjector4;
+                channel5InjEnabled = true;
+                channel6InjEnabled = true;
+                channel7InjEnabled = true;
+                channel8InjEnabled = true;
+                CRANK_ANGLE_MAX_INJ = 720;
+                maxIgnOutputs = 8;
+                req_fuel_uS *= 2;
+              }
               injector5StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel5InjDegrees);
               injector6StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel6InjDegrees);
               injector7StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel7InjDegrees);
@@ -676,6 +747,24 @@ void loop()
                 if (pw7percent != 100) { currentStatus.PW7 = (pw7percent * currentStatus.PW7) / 100; }
                 if (pw8percent != 100) { currentStatus.PW8 = (pw8percent * currentStatus.PW8) / 100; }
               }
+            }
+            else if((configPage2.injLayout == INJ_SEQUENTIAL) && BIT_CHECK(currentStatus.status3, BIT_STATUS3_HALFSYNC) && (CRANK_ANGLE_MAX_INJ != 360))
+            {
+              inj1StartFunction = openInjector1and5;
+              inj1EndFunction = closeInjector1and5;
+              inj2StartFunction = openInjector2and6;
+              inj2EndFunction = closeInjector2and6;
+              inj3StartFunction = openInjector3and7;
+              inj3EndFunction = closeInjector3and7;
+              inj4StartFunction = openInjector4and8;
+              inj4EndFunction = closeInjector4and8;
+              channel5InjEnabled = false;
+              channel6InjEnabled = false;
+              channel7InjEnabled = false;
+              channel8InjEnabled = false;
+              CRANK_ANGLE_MAX_INJ = 360;
+              maxIgnOutputs = 4;
+              req_fuel_uS /= 2;
             }
           #endif
           break;
@@ -1462,10 +1551,28 @@ void calculateIgnitionAngles(int dwellAngle)
       calculateIgnitionAngle2(dwellAngle);
 
       #if IGN_CHANNELS >= 4
-      if(configPage4.sparkMode == IGN_MODE_SEQUENTIAL)
+      if((configPage4.sparkMode == IGN_MODE_SEQUENTIAL) && currentStatus.hasSync)
       {
+        if(CRANK_ANGLE_MAX_IGN == 360)
+        {
+          ign1StartFunction = beginCoil1Charge;
+          ign1EndFunction = endCoil1Charge;
+          ign2StartFunction = beginCoil2Charge;
+          ign2EndFunction = endCoil2Charge;
+          maxIgnOutputs = 4;
+          CRANK_ANGLE_MAX_IGN = 720;
+        }
         calculateIgnitionAngle3(dwellAngle);
         calculateIgnitionAngle4(dwellAngle);
+      }
+      else if((configPage4.sparkMode == IGN_MODE_SEQUENTIAL) && BIT_CHECK(currentStatus.status3, BIT_STATUS3_HALFSYNC) && (CRANK_ANGLE_MAX_IGN != 360))
+      {
+        ign1StartFunction = beginCoil1and3Charge;
+        ign1EndFunction = endCoil1and3Charge;
+        ign2StartFunction = beginCoil2and4Charge;
+        ign2EndFunction = endCoil2and4Charge;
+        CRANK_ANGLE_MAX_IGN = 360;
+        maxIgnOutputs = 2;
       }
       else if(configPage4.sparkMode == IGN_MODE_ROTARY)
       {
@@ -1494,11 +1601,33 @@ void calculateIgnitionAngles(int dwellAngle)
       calculateIgnitionAngle3(dwellAngle);
 
       #if IGN_CHANNELS >= 6
-      if(configPage4.sparkMode == IGN_MODE_SEQUENTIAL)
+      if((configPage4.sparkMode == IGN_MODE_SEQUENTIAL) && currentStatus.hasSync)
       {
+        if(CRANK_ANGLE_MAX_IGN == 360)
+        {
+          ign1StartFunction = beginCoil1Charge;
+          ign1EndFunction = endCoil1Charge;
+          ign2StartFunction = beginCoil2Charge;
+          ign2EndFunction = endCoil2Charge;
+          ign3StartFunction = beginCoil3Charge;
+          ign3EndFunction = endCoil3Charge;
+          maxIgnOutputs = 6;
+          CRANK_ANGLE_MAX_IGN = 720;
+        }
         calculateIgnitionAngle4(dwellAngle);
         calculateIgnitionAngle5(dwellAngle);
         calculateIgnitionAngle6(dwellAngle);
+      }
+      else if((configPage4.sparkMode == IGN_MODE_SEQUENTIAL) && BIT_CHECK(currentStatus.status3, BIT_STATUS3_HALFSYNC) && (CRANK_ANGLE_MAX_IGN != 360))
+      {
+        ign1StartFunction = beginCoil1and4Charge;
+        ign1EndFunction = endCoil1and4Charge;
+        ign2StartFunction = beginCoil2and5Charge;
+        ign2EndFunction = endCoil2and5Charge;
+        ign3StartFunction = beginCoil3and6Charge;
+        ign3EndFunction = endCoil3and6Charge;
+        CRANK_ANGLE_MAX_IGN = 360;
+        maxIgnOutputs = 3;
       }
       #endif
       break;
@@ -1510,12 +1639,38 @@ void calculateIgnitionAngles(int dwellAngle)
       calculateIgnitionAngle4(dwellAngle);
 
       #if IGN_CHANNELS >= 8
-      if(configPage4.sparkMode == IGN_MODE_SEQUENTIAL)
+      if((configPage4.sparkMode == IGN_MODE_SEQUENTIAL) && currentStatus.hasSync)
       {
+        if(CRANK_ANGLE_MAX_IGN == 360)
+        {
+          ign1StartFunction = beginCoil1Charge;
+          ign1EndFunction = endCoil1Charge;
+          ign2StartFunction = beginCoil2Charge;
+          ign2EndFunction = endCoil2Charge;
+          ign3StartFunction = beginCoil3Charge;
+          ign3EndFunction = endCoil3Charge;
+          ign4StartFunction = beginCoil4Charge;
+          ign4EndFunction = endCoil4Charge;
+          maxIgnOutputs = 8;
+          CRANK_ANGLE_MAX_IGN = 720;
+        }
         calculateIgnitionAngle5(dwellAngle);
         calculateIgnitionAngle6(dwellAngle);
         calculateIgnitionAngle7(dwellAngle);
         calculateIgnitionAngle8(dwellAngle);
+      }
+      else if((configPage4.sparkMode == IGN_MODE_SEQUENTIAL) && BIT_CHECK(currentStatus.status3, BIT_STATUS3_HALFSYNC) && (CRANK_ANGLE_MAX_IGN != 360))
+      {
+        ign1StartFunction = beginCoil1and5Charge;
+        ign1EndFunction = endCoil1and5Charge;
+        ign2StartFunction = beginCoil2and6Charge;
+        ign2EndFunction = endCoil2and6Charge;
+        ign3StartFunction = beginCoil3and7Charge;
+        ign3EndFunction = endCoil3and7Charge;
+        ign4StartFunction = beginCoil4and8Charge;
+        ign4EndFunction = endCoil4and8Charge;
+        CRANK_ANGLE_MAX_IGN = 360;
+        maxIgnOutputs = 4;
       }
       #endif
       break;
