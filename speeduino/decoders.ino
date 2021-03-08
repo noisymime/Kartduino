@@ -34,13 +34,9 @@ uint16_t (*getRPM)(); //Pointer to the getRPM function (Gets pointed to the rele
 int (*getCrankAngle)(); //Pointer to the getCrank Angle function (Gets pointed to the relevant decoder)
 void (*triggerSetEndTeeth)(); //Pointer to the triggerSetEndTeeth function of each decoder
 
-volatile unsigned long curTime;
-volatile unsigned long curGap;
-volatile unsigned long curTime2;
-volatile unsigned long curGap2;
-volatile unsigned long lastGap;
-volatile unsigned long targetGap;
-volatile unsigned long compositeLastToothTime;
+volatile unsigned long curGap;   //cross used by loggerPrimaryISR()!
+volatile unsigned long curGap2;  //cross used by loggerSecondaryISR()!
+volatile unsigned long compositeLastToothTime; //cross-used by function in comms.ino
 
 unsigned long MAX_STALL_TIME = 500000UL; //The maximum time (in uS) that the system will continue to function before the engine is considered stalled/stopped. This is unique to each decoder, depending on the number of teeth etc. 500000 (half a second) is used as the default value, most decoders will be much less.
 volatile uint16_t toothCurrentCount = 0; //The current number of teeth (Onec sync has been achieved, this can never actually be 0
@@ -49,23 +45,18 @@ volatile unsigned long toothSystemLastToothTime = 0; //As below, but used for de
 volatile unsigned long toothLastToothTime = 0; //The time (micros()) that the last tooth was registered
 volatile unsigned long toothLastSecToothTime = 0; //The time (micros()) that the last tooth was registered on the secondary input
 volatile unsigned long toothLastMinusOneToothTime = 0; //The time (micros()) that the tooth before the last tooth was registered
-#ifndef SMALL_FLASH_MODE
-volatile unsigned long toothLastMinusOneSecToothTime = 0; //The time (micros()) that the tooth before the last tooth was registered on secondary input
-volatile unsigned long targetGap2;
-#endif
+
 volatile unsigned long toothOneTime = 0; //The time (micros()) that tooth 1 last triggered
 volatile unsigned long toothOneMinusOneTime = 0; //The 2nd to last time (micros()) that tooth 1 last triggered
 volatile bool revolutionOne = 0; // For sequential operation, this tracks whether the current revolution is 1 or 2 (not 1)
 
 volatile unsigned int secondaryToothCount; //Used for identifying the current secondary (Usually cam) tooth for patterns with multiple secondary teeth
 volatile unsigned long secondaryLastToothTime = 0; //The time (micros()) that the last tooth was registered (Cam input)
-volatile unsigned long secondaryLastToothTime1 = 0; //The time (micros()) that the last tooth was registered (Cam input)
 
 volatile uint16_t triggerActualTeeth;
 volatile unsigned long triggerFilterTime; // The shortest time (in uS) that pulses will be accepted (Used for debounce filtering)
 volatile unsigned long triggerSecFilterTime; // The shortest time (in uS) that pulses will be accepted (Used for debounce filtering) for the secondary input
-volatile bool validTrigger; //Is set true when the last trigger (Primary or secondary) was valid (ie passed filters)
-unsigned int triggerSecFilterTime_duration; // The shortest valid time (in uS) pulse DURATION
+volatile bool validTrigger; //Is set true when the last trigger (Primary or secondary) was valid (ie passed filters), cross used by logger
 volatile uint16_t triggerToothAngle; //The number of crank degrees that elapse per tooth
 volatile bool triggerToothAngleIsCorrect = false; //Whether or not the triggerToothAngle variable is currently accurate. Some patterns have times when the triggerToothAngle variable cannot be accurately set.
 bool secondDerivEnabled = false; //The use of the 2nd derivative calculation is limited to certain decoders. This is set to either true or false in each decoders setup routine
@@ -74,7 +65,6 @@ bool decoderIsLowRes = false; //Is set true, certain extra calculations are perf
 bool decoderHasSecondary = false; //Whether or not the pattern uses a secondary input
 bool decoderHasFixedCrankingTiming = false; //Whether or not the decoder supports fixed cranking timing
 byte checkSyncToothCount; //How many teeth must've been seen on this revolution before we try to confirm sync (Useful for missing tooth type decoders)
-unsigned long elapsedTime;
 unsigned long lastCrankAngleCalc;
 int16_t lastToothCalcAdvance = 99; //Invalid value here forces calculation of this on first main loop
 unsigned long lastVVTtime; //The time between the vvt reference pulse and the last crank pulse
@@ -97,6 +87,8 @@ int16_t toothAngles[24]; //An array for storing fixed tooth angles. Currently si
 */
 static inline void addToothLogEntry(unsigned long toothTime, bool whichTooth)
 {
+  static long compositeLastToothTime;
+  
   if(BIT_CHECK(currentStatus.status1, BIT_STATUS1_TOOTHLOG1READY)) { return; }
   //High speed tooth logging history
   if( (currentStatus.toothLogEnabled == true) || (currentStatus.compositeLogEnabled == true) ) 
@@ -363,6 +355,9 @@ void triggerSetup_missingTooth()
 
 void triggerPri_missingTooth()
 {
+  unsigned long curTime;
+  unsigned long targetGap;
+
    curTime = micros();
    curGap = curTime - toothLastToothTime;
    if ( curGap >= triggerFilterTime ) //Pulses should never be less than triggerFilterTime, so if they are it means a false trigger. (A 36-1 wheel at 8000pm will have triggers approx. every 200uS)
@@ -479,6 +474,10 @@ void triggerPri_missingTooth()
 
 void triggerSec_missingTooth()
 {
+  unsigned long curTime2;
+  static unsigned long toothLastMinusOneSecToothTime;
+  unsigned long targetGap2;
+
   curTime2 = micros();
   curGap2 = curTime2 - toothLastSecToothTime;
 
@@ -556,6 +555,8 @@ int getCrankAngle_missingTooth()
     unsigned long tempToothLastToothTime;
     int tempToothCurrentCount;
     bool tempRevolutionOne;
+    unsigned long elapsedTime;
+
     //Grab some variables that are used in the trigger code and assign them to temp variables.
     noInterrupts();
     tempToothCurrentCount = toothCurrentCount;
@@ -671,6 +672,8 @@ void triggerSetup_DualWheel()
 
 void triggerPri_DualWheel()
 {
+    unsigned long curTime;
+
     curTime = micros();
     curGap = curTime - toothLastToothTime;
     if ( curGap >= triggerFilterTime )
@@ -711,6 +714,8 @@ void triggerPri_DualWheel()
 
 void triggerSec_DualWheel()
 {
+  unsigned long curTime2;
+
   curTime2 = micros();
   curGap2 = curTime2 - toothLastSecToothTime;
   if ( curGap2 >= triggerSecFilterTime )
@@ -757,6 +762,8 @@ int getCrankAngle_DualWheel()
     unsigned long tempToothLastToothTime;
     int tempToothCurrentCount;
     bool tempRevolutionOne;
+    unsigned long elapsedTime;
+
     //Grab some variables that are used in the trigger code and assign them to temp variables.
     noInterrupts();
     tempToothCurrentCount = toothCurrentCount;
@@ -872,6 +879,8 @@ void triggerSetup_BasicDistributor()
 
 void triggerPri_BasicDistributor()
 {
+  unsigned long curTime;
+
   curTime = micros();
   curGap = curTime - toothLastToothTime;
   if ( (curGap >= triggerFilterTime) )
@@ -947,6 +956,8 @@ int getCrankAngle_BasicDistributor()
     //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
     unsigned long tempToothLastToothTime;
     int tempToothCurrentCount;
+    unsigned long elapsedTime;
+
     //Grab some variables that are used in the trigger code and assign them to temp variables.
     noInterrupts();
     tempToothCurrentCount = toothCurrentCount;
@@ -1008,7 +1019,10 @@ void triggerSetup_GM7X()
 
 void triggerPri_GM7X()
 {
-    lastGap = curGap;
+    unsigned long curTime;
+    static unsigned long lastGap;  //this will be preserved between calls
+    unsigned long targetGap;
+
     curTime = micros();
     curGap = curTime - toothLastToothTime;
     toothCurrentCount++; //Increment the tooth counter
@@ -1040,7 +1054,7 @@ void triggerPri_GM7X()
         }
       }
     }
-
+    lastGap = curGap;
     //New ignition mode!
     if(configPage2.perToothIgn == true)
     {
@@ -1075,6 +1089,8 @@ int getCrankAngle_GM7X()
     //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
     unsigned long tempToothLastToothTime;
     int tempToothCurrentCount;
+    unsigned long elapsedTime;
+
     //Grab some variables that are used in the trigger code and assign them to temp variables.
     noInterrupts();
     tempToothCurrentCount = toothCurrentCount;
@@ -1185,12 +1201,13 @@ void triggerSetup_4G63()
 
   triggerFilterTime = 1500; //10000 rpm, assuming we're triggering on both edges off the crank tooth.
   triggerSecFilterTime = (int)(1000000 / (MAX_RPM / 60 * 2)) / 2; //Same as above, but fixed at 2 teeth on the secondary input and divided by 2 (for cam speed)
-  triggerSecFilterTime_duration = 4000;
   secondaryLastToothTime = 0;
 }
 
 void triggerPri_4G63()
 {
+  unsigned long curTime;
+
   curTime = micros();
   curGap = curTime - toothLastToothTime;
   if ( (curGap >= triggerFilterTime) || (currentStatus.startRevolutions == 0) )
@@ -1379,14 +1396,13 @@ void triggerPri_4G63()
 }
 void triggerSec_4G63()
 {
+  unsigned long curTime2;
+
   //byte crankState = READ_PRI_TRIGGER();
   //First filter is a duration based one to ensure the pulse was of sufficient length (time)
-  //if(READ_SEC_TRIGGER()) { secondaryLastToothTime1 = micros(); return; }
   if(currentStatus.hasSync == true)
   {
   //1166 is the time taken to cross 70 degrees at 10k rpm
-  //if ( (micros() - secondaryLastToothTime1) < triggerSecFilterTime_duration ) { return; }
-  //triggerSecFilterTime_duration = (micros() - secondaryLastToothTime1) >> 1;
   }
 
 
@@ -1433,12 +1449,10 @@ void triggerSec_4G63()
       }
     }
 
-    //if ( (micros() - secondaryLastToothTime1) < triggerSecFilterTime_duration && configPage2.useResync )
     if ( (currentStatus.RPM < currentStatus.crankRPM) || (configPage4.useResync == 1) )
     {
       if( (currentStatus.hasSync == true) && (configPage2.nCylinders == 4) )
       {
-        triggerSecFilterTime_duration = (micros() - secondaryLastToothTime1) >> 1;
         if(READ_PRI_TRIGGER() == true)
         {
           //Whilst we're cranking and have sync, we need to watch for noise pulses.
@@ -1496,6 +1510,8 @@ uint16_t getRPM_4G63()
 int getCrankAngle_4G63()
 {
     int crankAngle = 0;
+    unsigned long elapsedTime;
+
     if(currentStatus.hasSync == true)
     {
       //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
@@ -1607,6 +1623,8 @@ void triggerSetup_24X()
 
 void triggerPri_24X()
 {
+  unsigned long curTime;
+
   if(toothCurrentCount == 25) { currentStatus.hasSync = false; } //Indicates sync has not been achieved (Still waiting for 1 revolution of the crank to take place)
   else
   {
@@ -1652,6 +1670,8 @@ int getCrankAngle_24X()
     //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
     unsigned long tempToothLastToothTime;
     int tempToothCurrentCount, tempRevolutionOne;
+    unsigned long elapsedTime;
+
     //Grab some variables that are used in the trigger code and assign them to temp variables.
     noInterrupts();
     tempToothCurrentCount = toothCurrentCount;
@@ -1717,6 +1737,8 @@ void triggerSetup_Jeep2000()
 
 void triggerPri_Jeep2000()
 {
+  unsigned long curTime;
+
   if(toothCurrentCount == 13) { currentStatus.hasSync = false; } //Indicates sync has not been achieved (Still waiting for 1 revolution of the crank to take place)
   else
   {
@@ -1763,6 +1785,8 @@ int getCrankAngle_Jeep2000()
     //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
     unsigned long tempToothLastToothTime;
     int tempToothCurrentCount;
+    unsigned long elapsedTime;
+
     //Grab some variables that are used in the trigger code and assign them to temp variables.
     noInterrupts();
     tempToothCurrentCount = toothCurrentCount;
@@ -1811,6 +1835,8 @@ void triggerSetup_Audi135()
 
 void triggerPri_Audi135()
 {
+  unsigned long curTime;
+
    curTime = micros();
    curGap = curTime - toothSystemLastToothTime;
    if ( (curGap > triggerFilterTime) || (currentStatus.startRevolutions == 0) )
@@ -1850,6 +1876,7 @@ void triggerPri_Audi135()
 void triggerSec_Audi135()
 {
   /*
+  unsigned long curTime2;
   curTime2 = micros();
   curGap2 = curTime2 - toothLastSecToothTime;
   if ( curGap2 < triggerSecFilterTime ) { return; }
@@ -1878,6 +1905,8 @@ int getCrankAngle_Audi135()
     unsigned long tempToothLastToothTime;
     int tempToothCurrentCount;
     bool tempRevolutionOne;
+    unsigned long elapsedTime;
+
     //Grab some variables that are used in the trigger code and assign them to temp variables.
     noInterrupts();
     tempToothCurrentCount = toothCurrentCount;
@@ -1925,7 +1954,10 @@ void triggerSetup_HondaD17()
 
 void triggerPri_HondaD17()
 {
-   lastGap = curGap;
+  unsigned long curTime;
+  static unsigned long lastGap;  //this will be preserved between calls
+  unsigned long targetGap;
+
    curTime = micros();
    curGap = curTime - toothLastToothTime;
    toothCurrentCount++; //Increment the tooth counter
@@ -1962,7 +1994,7 @@ void triggerPri_HondaD17()
        toothLastToothTime = curTime;
      }
    }
-
+   lastGap = curGap;
 }
 void triggerSec_HondaD17() { return; } //The 4+1 signal on the cam is yet to be supported
 uint16_t getRPM_HondaD17()
@@ -1974,6 +2006,8 @@ int getCrankAngle_HondaD17()
     //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
     unsigned long tempToothLastToothTime;
     int tempToothCurrentCount;
+    unsigned long elapsedTime;
+
     //Grab some variables that are used in the trigger code and assign them to temp variables.
     noInterrupts();
     tempToothCurrentCount = toothCurrentCount;
@@ -2054,6 +2088,8 @@ void triggerSetup_Miata9905()
 
 void triggerPri_Miata9905()
 {
+  unsigned long curTime;
+
   curTime = micros();
   curGap = curTime - toothLastToothTime;
   if ( (curGap >= triggerFilterTime) || (currentStatus.startRevolutions == 0) )
@@ -2143,6 +2179,8 @@ void triggerPri_Miata9905()
 
 void triggerSec_Miata9905()
 {
+  unsigned long curTime2;
+
   curTime2 = micros();
   curGap2 = curTime2 - toothLastSecToothTime;
 
@@ -2154,7 +2192,6 @@ void triggerSec_Miata9905()
   if ( curGap2 >= triggerSecFilterTime )
   {
     toothLastSecToothTime = curTime2;
-    lastGap = curGap2;
     secondaryToothCount++;
 
     //TODO Add some secondary filtering here
@@ -2202,6 +2239,8 @@ uint16_t getRPM_Miata9905()
 int getCrankAngle_Miata9905()
 {
     int crankAngle = 0;
+    unsigned long elapsedTime;
+    
     //if(currentStatus.hasSync == true)
     {
       //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
@@ -2307,6 +2346,8 @@ void triggerSetup_MazdaAU()
 
 void triggerPri_MazdaAU()
 {
+  unsigned long curTime;
+
   curTime = micros();
   curGap = curTime - toothLastToothTime;
   if ( curGap >= triggerFilterTime )
@@ -2344,8 +2385,11 @@ void triggerPri_MazdaAU()
 
 void triggerSec_MazdaAU()
 {
-  curTime2 = micros();
-  lastGap = curGap2;
+  unsigned long curTime2;
+  static unsigned long lastGap;  //this will be preserved between calls
+  unsigned long targetGap;
+
+  curTime2 = micros();  
   curGap2 = curTime2 - toothLastSecToothTime;
   //if ( curGap2 < triggerSecFilterTime ) { return; }
   toothLastSecToothTime = curTime2;
@@ -2371,6 +2415,7 @@ void triggerSec_MazdaAU()
     }
     secondaryToothCount++;
   }
+  lastGap = curGap2;
 }
 
 
@@ -2400,6 +2445,8 @@ uint16_t getRPM_MazdaAU()
 int getCrankAngle_MazdaAU()
 {
     int crankAngle = 0;
+    unsigned long elapsedTime;
+
     if(currentStatus.hasSync == true)
     {
       //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
@@ -2474,6 +2521,8 @@ int getCrankAngle_non360()
     //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
     unsigned long tempToothLastToothTime;
     int tempToothCurrentCount;
+    unsigned long elapsedTime;
+
     //Grab some variables that are used in the trigger code and assign them to temp variables.
     noInterrupts();
     tempToothCurrentCount = toothCurrentCount;
@@ -2524,6 +2573,8 @@ void triggerSetup_Nissan360()
 
 void triggerPri_Nissan360()
 {
+  unsigned long curTime;
+
    curTime = micros();
    curGap = curTime - toothLastToothTime;
    //if ( curGap < triggerFilterTime ) { return; }
@@ -2567,6 +2618,8 @@ void triggerPri_Nissan360()
 
 void triggerSec_Nissan360()
 {
+  unsigned long curTime2;
+
   curTime2 = micros();
   curGap2 = curTime2 - toothLastSecToothTime;
   //if ( curGap2 < triggerSecFilterTime ) { return; }
@@ -2693,6 +2746,7 @@ int getCrankAngle_Nissan360()
   int tempToothLastToothTime;
   int tempToothLastMinusOneToothTime;
   int tempToothCurrentCount;
+  unsigned long elapsedTime;
 
   noInterrupts();
   tempToothLastToothTime = toothLastToothTime;
@@ -2703,11 +2757,11 @@ int getCrankAngle_Nissan360()
 
   crankAngle = ( (tempToothCurrentCount - 1) * 2) + configPage4.triggerAngle;
   unsigned long halfTooth = (tempToothLastToothTime - tempToothLastMinusOneToothTime) / 2;
-  if (elapsedTime > halfTooth)
+/*  if (elapsedTime > halfTooth)  //elapsedtime not initialized or assigned any value for this point(found by analysing code)
   {
     //Means we're over halfway to the next tooth, so add on 1 degree
     crankAngle += 1;
-  }
+  }*/
 
   if (crankAngle >= 720) { crankAngle -= 720; }
   if (crankAngle > CRANK_ANGLE_MAX) { crankAngle -= CRANK_ANGLE_MAX; }
@@ -2767,6 +2821,8 @@ void triggerSetup_Subaru67()
 
 void triggerPri_Subaru67()
 {
+  unsigned long curTime;
+
    curTime = micros();
    //curGap = curTime - toothLastToothTime;
    //if ( curGap < triggerFilterTime ) { return; }
@@ -2865,8 +2921,10 @@ void triggerPri_Subaru67()
 
 void triggerSec_Subaru67()
 {
+  unsigned long curTime2;
+
   if( (toothSystemCount == 0) || (toothSystemCount == 3) )
-  {
+  {    
     curTime2 = micros();
     curGap2 = curTime2 - toothLastSecToothTime;
     
@@ -2914,6 +2972,8 @@ uint16_t getRPM_Subaru67()
 int getCrankAngle_Subaru67()
 {
   int crankAngle = 0;
+  unsigned long elapsedTime;
+
   if( currentStatus.hasSync == true )
   {
     //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
@@ -3017,6 +3077,8 @@ void triggerSetup_Daihatsu()
 
 void triggerPri_Daihatsu()
 {
+  unsigned long curTime;
+
   curTime = micros();
   curGap = curTime - toothLastToothTime;
 
@@ -3118,6 +3180,8 @@ int getCrankAngle_Daihatsu()
     unsigned long tempToothLastToothTime;
     int tempToothCurrentCount;
     int crankAngle;
+    unsigned long elapsedTime;
+
     //Grab some variables that are used in the trigger code and assign them to temp variables.
     noInterrupts();
     tempToothCurrentCount = toothCurrentCount;
@@ -3163,7 +3227,10 @@ void triggerSetup_Harley()
 
 void triggerPri_Harley()
 {
-  lastGap = curGap;
+  unsigned long curTime;
+  static unsigned long lastGap;  //this will be preserved between calls
+  unsigned long targetGap;
+  
   curTime = micros();
   curGap = curTime - toothLastToothTime;
   setFilter(curGap); // Filtering adjusted according to setting
@@ -3200,6 +3267,7 @@ void triggerPri_Harley()
       toothCurrentCount = 0;
     } //Primary trigger high
   } //Trigger filter
+  lastGap = curGap;
 }
 
 
@@ -3249,6 +3317,8 @@ int getCrankAngle_Harley()
   //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
   unsigned long tempToothLastToothTime;
   int tempToothCurrentCount;
+  unsigned long elapsedTime;
+
   //Grab some variables that are used in the trigger code and assign them to temp variables.
   noInterrupts();
   tempToothCurrentCount = toothCurrentCount;
@@ -3308,6 +3378,9 @@ void triggerSetup_ThirtySixMinus222()
 
 void triggerPri_ThirtySixMinus222()
 {
+  unsigned long curTime;
+  static unsigned long targetGap;
+
    curTime = micros();
    curGap = curTime - toothLastToothTime;
    if ( curGap >= triggerFilterTime ) //Pulses should never be less than triggerFilterTime, so if they are it means a false trigger. (A 36-1 wheel at 8000pm will have triggers approx. every 200uS)
@@ -3490,6 +3563,10 @@ void triggerSetup_ThirtySixMinus21()
 
 void triggerPri_ThirtySixMinus21()
 {
+  unsigned long curTime;
+  unsigned long targetGap;
+  unsigned long targetGap2;
+
    curTime = micros();
    curGap = curTime - toothLastToothTime;
    if ( curGap >= triggerFilterTime ) //Pulses should never be less than triggerFilterTime, so if they are it means a false trigger. (A 36-1 wheel at 8000pm will have triggers approx. every 200uS)
@@ -3637,6 +3714,8 @@ void triggerSetup_420a()
 
 void triggerPri_420a()
 {
+  unsigned long curTime;
+
   curTime = micros();
   curGap = curTime - toothLastToothTime;
   if ( curGap >= triggerFilterTime ) //Pulses should never be less than triggerFilterTime, so if they are it means a false trigger. (A 36-1 wheel at 8000pm will have triggers approx. every 200uS)
@@ -3739,6 +3818,8 @@ int getCrankAngle_420a()
   //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
   unsigned long tempToothLastToothTime;
   int tempToothCurrentCount;
+  unsigned long elapsedTime;
+
   //Grab some variables that are used in the trigger code and assign them to temp variables.
   noInterrupts();
   tempToothCurrentCount = toothCurrentCount;
