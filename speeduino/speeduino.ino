@@ -566,18 +566,8 @@ void loop()
 
           if((configPage2.injLayout == INJ_SEQUENTIAL) && currentStatus.hasSync)
           {
-            if(CRANK_ANGLE_MAX_INJ != 720)
-            {
-              inj1StartFunction = openInjector1;
-              inj1EndFunction = closeInjector1;
-              inj2StartFunction = openInjector2;
-              inj2EndFunction = closeInjector2;
-              channel3InjEnabled = true;
-              channel4InjEnabled = true;
-              CRANK_ANGLE_MAX_INJ = 720;
-              maxIgnOutputs = 4;
-              req_fuel_uS *= 2;
-            }
+            changeHalfToFullSync();
+
             injector3StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel3InjDegrees);
             injector4StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel4InjDegrees);
 
@@ -594,18 +584,6 @@ void loop()
               if (pw4percent != 100) { currentStatus.PW4 = (pw4percent * currentStatus.PW4) / 100; }
             }
           }
-          else if((configPage2.injLayout == INJ_SEQUENTIAL) && BIT_CHECK(currentStatus.status3, BIT_STATUS3_HALFSYNC) && (CRANK_ANGLE_MAX_INJ != 360))
-          {
-            inj1StartFunction = openInjector1and4;
-            inj1EndFunction = closeInjector1and4;
-            inj2StartFunction = openInjector2and3;
-            inj2EndFunction = closeInjector2and3;
-            channel3InjEnabled = false;
-            channel4InjEnabled = false;
-            CRANK_ANGLE_MAX_INJ = 360;
-            maxIgnOutputs = 2;
-            req_fuel_uS /= 2;
-          }
           else if( (configPage10.stagingEnabled == true) && (currentStatus.PW3 > 0) )
           {
             PWdivTimerPerDegree = div(currentStatus.PW3, timePerDegree).quot; //Need to redo this for PW3 as it will be dramatically different to PW1 when staging
@@ -615,6 +593,7 @@ void loop()
             injector4StartAngle = injector3StartAngle + (CRANK_ANGLE_MAX_INJ / 2); //Phase this either 180 or 360 degrees out from inj3 (In reality this will always be 180 as you can't have sequential and staged currently)
             if(injector4StartAngle > (uint16_t)CRANK_ANGLE_MAX_INJ) { injector4StartAngle -= CRANK_ANGLE_MAX_INJ; }
           }
+          else { changeFullToHalfSync(); }
           break;
         //5 cylinders
         case 5:
@@ -636,21 +615,8 @@ void loop()
           #if INJ_CHANNELS >= 6
             if((configPage2.injLayout == INJ_SEQUENTIAL) && currentStatus.hasSync)
             {
-              if(CRANK_ANGLE_MAX_INJ != 720)
-              {
-                inj1StartFunction = openInjector1;
-                inj1EndFunction = closeInjector1;
-                inj2StartFunction = openInjector2;
-                inj2EndFunction = closeInjector2;
-                inj3StartFunction = openInjector3;
-                inj3EndFunction = closeInjector3;
-                channel4InjEnabled = true;
-                channel5InjEnabled = true;
-                channel6InjEnabled = true;
-                CRANK_ANGLE_MAX_INJ = 720;
-                maxIgnOutputs = 6;
-                req_fuel_uS *= 2;
-              }
+              changeHalfToFullSync();
+
               injector4StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel4InjDegrees);
               injector5StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel5InjDegrees);
               injector6StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel6InjDegrees);
@@ -672,21 +638,7 @@ void loop()
                 if (pw6percent != 100) { currentStatus.PW6 = (pw6percent * currentStatus.PW6) / 100; }
               }
             }
-            else if((configPage2.injLayout == INJ_SEQUENTIAL) && BIT_CHECK(currentStatus.status3, BIT_STATUS3_HALFSYNC) && (CRANK_ANGLE_MAX_INJ != 360))
-            {
-              inj1StartFunction = openInjector1and4;
-              inj1EndFunction = closeInjector1and4;
-              inj2StartFunction = openInjector2and5;
-              inj2EndFunction = closeInjector2and5;
-              inj3StartFunction = openInjector3and6;
-              inj3EndFunction = closeInjector3and6;
-              channel4InjEnabled = false;
-              channel5InjEnabled = false;
-              channel6InjEnabled = false;
-              CRANK_ANGLE_MAX_INJ = 360;
-              maxIgnOutputs = 3;
-              req_fuel_uS /= 2;
-            }
+          else { changeFullToHalfSync(); }
           #endif
           break;
         //8 cylinders
@@ -704,24 +656,8 @@ void loop()
           #if INJ_CHANNELS >= 8
             if((configPage2.injLayout == INJ_SEQUENTIAL) && currentStatus.hasSync)
             {
-              if(CRANK_ANGLE_MAX_INJ != 720)
-              {
-                inj1StartFunction = openInjector1;
-                inj1EndFunction = closeInjector1;
-                inj2StartFunction = openInjector2;
-                inj2EndFunction = closeInjector2;
-                inj3StartFunction = openInjector3;
-                inj3EndFunction = closeInjector3;
-                inj4StartFunction = openInjector4;
-                inj4EndFunction = closeInjector4;
-                channel5InjEnabled = true;
-                channel6InjEnabled = true;
-                channel7InjEnabled = true;
-                channel8InjEnabled = true;
-                CRANK_ANGLE_MAX_INJ = 720;
-                maxIgnOutputs = 8;
-                req_fuel_uS *= 2;
-              }
+              changeHalfToFullSync();
+
               injector5StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel5InjDegrees);
               injector6StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel6InjDegrees);
               injector7StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel7InjDegrees);
@@ -748,24 +684,8 @@ void loop()
                 if (pw8percent != 100) { currentStatus.PW8 = (pw8percent * currentStatus.PW8) / 100; }
               }
             }
-            else if((configPage2.injLayout == INJ_SEQUENTIAL) && BIT_CHECK(currentStatus.status3, BIT_STATUS3_HALFSYNC) && (CRANK_ANGLE_MAX_INJ != 360))
-            {
-              inj1StartFunction = openInjector1and5;
-              inj1EndFunction = closeInjector1and5;
-              inj2StartFunction = openInjector2and6;
-              inj2EndFunction = closeInjector2and6;
-              inj3StartFunction = openInjector3and7;
-              inj3EndFunction = closeInjector3and7;
-              inj4StartFunction = openInjector4and8;
-              inj4EndFunction = closeInjector4and8;
-              channel5InjEnabled = false;
-              channel6InjEnabled = false;
-              channel7InjEnabled = false;
-              channel8InjEnabled = false;
-              CRANK_ANGLE_MAX_INJ = 360;
-              maxIgnOutputs = 4;
-              req_fuel_uS /= 2;
-            }
+          else { changeFullToHalfSync(); }
+
           #endif
           break;
 
