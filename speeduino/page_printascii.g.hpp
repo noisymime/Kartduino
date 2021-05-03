@@ -6,127 +6,126 @@ It is auto generated and your edits will be overwritten
 
 static void printPage1(Print &target) {
 	target.println(F("\nPg 1 Cfg"));
-	void *pPage = &configPage1;
-	target.println(*((uint8_t*)((byte*)pPage + 0))); // aseTaperTime
-	target.println(*((uint8_t*)((byte*)pPage + 1))); // aeColdPct
-	target.println(*((uint8_t*)((byte*)pPage + 2))); // aeColdTaperMin
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x0003) >> 0); // aeMode
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x0004) >> 2); // battVCorMode
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x0008) >> 3); // SoftLimitMode
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x0010) >> 4); // useTachoSweep
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x0020) >> 5); // aeApplyMode
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x00C0) >> 6); // multiplyMAP
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 4), ((uint8_t*)((byte*)pPage + 4))+10); // wueRates
-	target.println(*((uint8_t*)((byte*)pPage + 14))); // crankingPct
-	target.println(((*((uint8_t*)((byte*)pPage + 15))) & 0x00FF) >> 0); // pinLayout
-	target.println(((*((uint8_t*)((byte*)pPage + 16))) & 0x003F) >> 0); // tachoPin
-	target.println(((*((uint8_t*)((byte*)pPage + 16))) & 0x00C0) >> 6); // tachoDiv
-	target.println(*((uint8_t*)((byte*)pPage + 17))); // tachoDuration
-	target.println(*((uint8_t*)((byte*)pPage + 18))); // maeThresh
-	target.println(*((uint8_t*)((byte*)pPage + 19))); // taeThresh
-	target.println(*((uint8_t*)((byte*)pPage + 20))); // aeTime
-	target.println(((*((uint8_t*)((byte*)pPage + 21))) & 0x0007) >> 0); // display
-	target.println(((*((uint8_t*)((byte*)pPage + 21))) & 0x0038) >> 3); // display1
-	target.println(((*((uint8_t*)((byte*)pPage + 21))) & 0x00C0) >> 6); // display2
-	target.println(((*((uint8_t*)((byte*)pPage + 22))) & 0x0007) >> 0); // display3
-	target.println(((*((uint8_t*)((byte*)pPage + 22))) & 0x0018) >> 3); // display4
-	target.println(((*((uint8_t*)((byte*)pPage + 22))) & 0x00E0) >> 5); // display5
-	target.println(((*((uint8_t*)((byte*)pPage + 23))) & 0x000F) >> 0); // displayB1
-	target.println(((*((uint8_t*)((byte*)pPage + 23))) & 0x00F0) >> 4); // displayB2
-	target.println(*((uint8_t*)((byte*)pPage + 24))); // reqFuel
-	target.println(*((uint8_t*)((byte*)pPage + 25))); // divider
-	target.println(((*((uint8_t*)((byte*)pPage + 26))) & 0x0001) >> 0); // alternate
-	target.println(((*((uint8_t*)((byte*)pPage + 26))) & 0x0002) >> 1); // multiplyMAP1
-	target.println(((*((uint8_t*)((byte*)pPage + 26))) & 0x0004) >> 2); // includeAFR
-	target.println(((*((uint8_t*)((byte*)pPage + 26))) & 0x0008) >> 3); // hardCutType
-	target.println(((*((uint8_t*)((byte*)pPage + 26))) & 0x0070) >> 4); // ignAlgorithm
-	target.println(((*((uint8_t*)((byte*)pPage + 26))) & 0x0080) >> 7); // indInjAng
-	target.println(*((uint8_t*)((byte*)pPage + 27))); // injOpen
-	serial_print_space_delimited(target, (uint16_t*)((byte*)pPage + 28), ((uint16_t*)((byte*)pPage + 28))+4); // injAng
-	target.println(((*((uint8_t*)((byte*)pPage + 36))) & 0x0003) >> 0); // mapSample
-	target.println(((*((uint8_t*)((byte*)pPage + 36))) & 0x0004) >> 2); // twoStroke
-	target.println(((*((uint8_t*)((byte*)pPage + 36))) & 0x0008) >> 3); // injType
-	target.println(((*((uint8_t*)((byte*)pPage + 36))) & 0x00F0) >> 4); // nCylinders
-	target.println(((*((uint8_t*)((byte*)pPage + 37))) & 0x0007) >> 0); // algorithm
-	target.println(((*((uint8_t*)((byte*)pPage + 37))) & 0x0008) >> 3); // fixAngEnable
-	target.println(((*((uint8_t*)((byte*)pPage + 37))) & 0x00F0) >> 4); // nInjectors
-	target.println(((*((uint8_t*)((byte*)pPage + 38))) & 0x0001) >> 0); // engineType
-	target.println(((*((uint8_t*)((byte*)pPage + 38))) & 0x0002) >> 1); // flexEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 38))) & 0x0004) >> 2); // legacyMAP
-	target.println(((*((uint8_t*)((byte*)pPage + 38))) & 0x0008) >> 3); // baroCorr
-	target.println(((*((uint8_t*)((byte*)pPage + 38))) & 0x0030) >> 4); // injLayout
-	target.println(((*((uint8_t*)((byte*)pPage + 38))) & 0x0040) >> 6); // perToothIgn
-	target.println(((*((uint8_t*)((byte*)pPage + 38))) & 0x0080) >> 7); // dfcoEnabled
-	target.println(*((uint8_t*)((byte*)pPage + 39))); // aeColdTaperMax
-	target.println(*((uint8_t*)((byte*)pPage + 40))); // dutyLim
-	target.println(*((uint8_t*)((byte*)pPage + 41))); // flexFreqLow
-	target.println(*((uint8_t*)((byte*)pPage + 42))); // flexFreqHigh
-	target.println(*((uint8_t*)((byte*)pPage + 43))); // boostMaxDuty
-	target.println(*((uint8_t*)((byte*)pPage + 44))); // tpsMin
-	target.println(*((uint8_t*)((byte*)pPage + 45))); // tpsMax
-	target.println(*((int8_t*)((byte*)pPage + 46))); // mapMin
-	target.println(*((uint16_t*)((byte*)pPage + 47))); // mapMax
-	target.println(*((uint8_t*)((byte*)pPage + 49))); // fpPrime
-	target.println(*((uint8_t*)((byte*)pPage + 50))); // stoich
-	target.println(*((uint16_t*)((byte*)pPage + 51))); // oddfire2
-	target.println(*((uint16_t*)((byte*)pPage + 53))); // oddfire3
-	target.println(*((uint16_t*)((byte*)pPage + 55))); // oddfire4
-	target.println(((*((uint8_t*)((byte*)pPage + 57))) & 0x003F) >> 0); // idleUpPin
-	target.println(((*((uint8_t*)((byte*)pPage + 57))) & 0x0040) >> 6); // idleUpPolarity
-	target.println(((*((uint8_t*)((byte*)pPage + 57))) & 0x0080) >> 7); // idleUpEnabled
-	target.println(*((uint8_t*)((byte*)pPage + 58))); // idleUpAdder
-	target.println(*((uint8_t*)((byte*)pPage + 59))); // aeTaperMin
-	target.println(*((uint8_t*)((byte*)pPage + 60))); // aeTaperMax
-	target.println(*((uint8_t*)((byte*)pPage + 61))); // iacCLminDuty
-	target.println(*((uint8_t*)((byte*)pPage + 62))); // iacCLmaxDuty
-	target.println(*((uint8_t*)((byte*)pPage + 63))); // boostMinDuty
-	target.println(*((int8_t*)((byte*)pPage + 64))); // baroMin
-	target.println(*((uint16_t*)((byte*)pPage + 65))); // baroMax
-	target.println(*((int8_t*)((byte*)pPage + 67))); // EMAPMin
-	target.println(*((uint16_t*)((byte*)pPage + 68))); // EMAPMax
-	target.println(((*((uint8_t*)((byte*)pPage + 70))) & 0x0001) >> 0); // fanWhenOff
-	target.println(((*((uint8_t*)((byte*)pPage + 70))) & 0x0002) >> 1); // fanWhenCranking
-	target.println(((*((uint8_t*)((byte*)pPage + 70))) & 0x0004) >> 2); // useDwellMap
-	target.println(((*((uint8_t*)((byte*)pPage + 70))) & 0x0018) >> 3); // unused_fan_bits
-	target.println(((*((uint8_t*)((byte*)pPage + 70))) & 0x0060) >> 5); // rtc_mode
-	target.println(((*((uint8_t*)((byte*)pPage + 70))) & 0x0080) >> 7); // incorporateAFR
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 71), ((uint8_t*)((byte*)pPage + 71))+4); // asePct
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 75), ((uint8_t*)((byte*)pPage + 75))+4); // aseCount
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 79), ((uint8_t*)((byte*)pPage + 79))+4); // aseBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 83), ((uint8_t*)((byte*)pPage + 83))+4); // primePulse
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 87), ((uint8_t*)((byte*)pPage + 87))+4); // primeBins
-	target.println(((*((uint8_t*)((byte*)pPage + 91))) & 0x003F) >> 0); // CTPSPin
-	target.println(((*((uint8_t*)((byte*)pPage + 91))) & 0x0040) >> 6); // CTPSPolarity
-	target.println(((*((uint8_t*)((byte*)pPage + 91))) & 0x0080) >> 7); // CTPSEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 92))) & 0x0003) >> 0); // idleAdvEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 92))) & 0x0004) >> 2); // idleAdvAlgorithm
-	target.println(((*((uint8_t*)((byte*)pPage + 92))) & 0x00F8) >> 3); // idleAdvDelay
-	target.println(*((uint8_t*)((byte*)pPage + 93))); // idleAdvRPM
-	target.println(*((uint8_t*)((byte*)pPage + 94))); // idleAdvTPS
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 95), ((uint8_t*)((byte*)pPage + 95))+4); // injAngRPM
-	target.println(*((uint8_t*)((byte*)pPage + 99))); // idleTaperTime
-	target.println(*((uint8_t*)((byte*)pPage + 100))); // dfcoDelay
-	target.println(*((uint8_t*)((byte*)pPage + 101))); // dfcoMinCLT
-	target.println(((*((uint8_t*)((byte*)pPage + 102))) & 0x0003) >> 0); // vssMode
-	target.println(((*((uint8_t*)((byte*)pPage + 102))) & 0x00FC) >> 2); // vssPin
-	target.println(*((uint16_t*)((byte*)pPage + 103))); // vssPulsesPerKm
-	target.println(*((uint8_t*)((byte*)pPage + 105))); // vssSmoothing
-	target.println(*((uint16_t*)((byte*)pPage + 106))); // vssRatio1
-	target.println(*((uint16_t*)((byte*)pPage + 108))); // vssRatio2
-	target.println(*((uint16_t*)((byte*)pPage + 110))); // vssRatio3
-	target.println(*((uint16_t*)((byte*)pPage + 112))); // vssRatio4
-	target.println(*((uint16_t*)((byte*)pPage + 114))); // vssRatio5
-	target.println(*((uint16_t*)((byte*)pPage + 116))); // vssRatio6
-	target.println(((*((uint8_t*)((byte*)pPage + 118))) & 0x0001) >> 0); // idleUpOutputEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 118))) & 0x0002) >> 1); // idleUpOutputInv
-	target.println(((*((uint8_t*)((byte*)pPage + 118))) & 0x00FC) >> 2); // idleUpOutputPin
-	target.println(*((uint8_t*)((byte*)pPage + 119))); // tachoSweepMaxRPM
-	target.println(*((uint8_t*)((byte*)pPage + 120))); // primingDelay
-	target.println(*((uint8_t*)((byte*)pPage + 121))); // iacTPSlimit
-	target.println(*((uint8_t*)((byte*)pPage + 122))); // iacRPMlimitHysteresis
-	target.println(*((int8_t*)((byte*)pPage + 123))); // rtc_trim
-	target.println(*((uint8_t*)((byte*)pPage + 124))); // idleAdvVss
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 125), ((uint8_t*)((byte*)pPage + 125))+3); // unused2-95
+	target.println(configPage1.aseTaperTime);
+	target.println(configPage1.aeColdPct);
+	target.println(configPage1.aeColdTaperMin);
+	target.println(configPage1.aeMode);
+	target.println(configPage1.battVCorMode);
+	target.println(configPage1.SoftLimitMode);
+	target.println(configPage1.useTachoSweep);
+	target.println(configPage1.aeApplyMode);
+	target.println(configPage1.multiplyMAP);
+	print_array(target, configPage1.wueValues);
+	target.println(configPage1.crankingPct);
+	target.println(configPage1.pinMapping);
+	target.println(configPage1.tachoPin);
+	target.println(configPage1.tachoDiv);
+	target.println(configPage1.tachoDuration);
+	target.println(configPage1.maeThresh);
+	target.println(configPage1.taeThresh);
+	target.println(configPage1.aeTime);
+	target.println(configPage1.displayType);
+	target.println(configPage1.display1);
+	target.println(configPage1.display2);
+	target.println(configPage1.display3);
+	target.println(configPage1.display4);
+	target.println(configPage1.display5);
+	target.println(configPage1.displayB1);
+	target.println(configPage1.displayB2);
+	target.println(configPage1.reqFuel);
+	target.println(configPage1.divider);
+	target.println(configPage1.indInjAng);
+	target.println(configPage1.ignAlgorithm);
+	target.println(configPage1.hardCutType);
+	target.println(configPage1.multiplyMAP_old);
+	target.println(configPage1.injTiming);
+	target.println(configPage1.includeAFR);
+	target.println(configPage1.injOpen);
+	print_array(target, configPage1.injAng);
+	target.println(configPage1.mapSample);
+	target.println(configPage1.strokes);
+	target.println(configPage1.injType);
+	target.println(configPage1.nCylinders);
+	target.println(configPage1.algorithm);
+	target.println(configPage1.fixAngEnable);
+	target.println(configPage1.nInjectors);
+	target.println(configPage1.legacyMAP);
+	target.println(configPage1.dfcoEnabled);
+	target.println(configPage1.perToothIgn);
+	target.println(configPage1.injLayout);
+	target.println(configPage1.flexEnabled);
+	target.println(configPage1.engineType);
+	target.println(configPage1.baroCorr);
+	target.println(configPage1.aeColdTaperMax);
+	target.println(configPage1.dutyLim);
+	target.println(configPage1.flexFreqLow);
+	target.println(configPage1.flexFreqHigh);
+	target.println(configPage1.boostMaxDuty);
+	target.println(configPage1.tpsMin);
+	target.println(configPage1.tpsMax);
+	target.println(configPage1.mapMin);
+	target.println(configPage1.mapMax);
+	target.println(configPage1.fpPrime);
+	target.println(configPage1.stoich);
+	target.println(configPage1.oddfire2);
+	target.println(configPage1.oddfire3);
+	target.println(configPage1.oddfire4);
+	target.println(configPage1.idleUpPin);
+	target.println(configPage1.idleUpPolarity);
+	target.println(configPage1.idleUpEnabled);
+	target.println(configPage1.idleUpAdder);
+	target.println(configPage1.aeTaperMin);
+	target.println(configPage1.aeTaperMax);
+	target.println(configPage1.iacCLminDuty);
+	target.println(configPage1.iacCLmaxDuty);
+	target.println(configPage1.boostMinDuty);
+	target.println(configPage1.baroMin);
+	target.println(configPage1.baroMax);
+	target.println(configPage1.EMAPMin);
+	target.println(configPage1.EMAPMax);
+	target.println(configPage1.fanWhenOff);
+	target.println(configPage1.fanWhenCranking);
+	target.println(configPage1.useDwellMap);
+	target.println(configPage1.fanUnused);
+	target.println(configPage1.rtc_mode);
+	target.println(configPage1.incorporateAFR);
+	print_array(target, configPage1.asePct);
+	print_array(target, configPage1.aseCount);
+	print_array(target, configPage1.aseBins);
+	print_array(target, configPage1.primePulse);
+	print_array(target, configPage1.primeBins);
+	target.println(configPage1.CTPSEnabled);
+	target.println(configPage1.CTPSPolarity);
+	target.println(configPage1.CTPSPin);
+	target.println(configPage1.idleAdvEnabled);
+	target.println(configPage1.idleAdvAlgorithm);
+	target.println(configPage1.idleAdvDelay);
+	target.println(configPage1.idleAdvRPM);
+	target.println(configPage1.idleAdvTPS);
+	print_array(target, configPage1.injAngRPM);
+	target.println(configPage1.idleTaperTime);
+	target.println(configPage1.dfcoDelay);
+	target.println(configPage1.dfcoMinCLT);
+	target.println(configPage1.vssMode);
+	target.println(configPage1.vssPin);
+	target.println(configPage1.vssPulsesPerKm);
+	target.println(configPage1.vssSmoothing);
+	target.println(configPage1.vssRatio1);
+	target.println(configPage1.vssRatio2);
+	target.println(configPage1.vssRatio3);
+	target.println(configPage1.vssRatio4);
+	target.println(configPage1.vssRatio5);
+	target.println(configPage1.vssRatio6);
+	target.println(configPage1.idleUpOutputEnabled);
+	target.println(configPage1.idleUpOutputInv);
+	target.println(configPage1.idleUpOutputPin);
+	target.println(configPage1.tachoSweepMaxRPM);
+	target.println(configPage1.primingDelay);
+	target.println(configPage1.iacTPSlimit);
+	target.println(configPage1.iacRPMlimitHysteresis);
+	target.println(configPage1.rtc_trim);
+	target.println(configPage1.idleAdvVss);
+	print_array(target, configPage1.unused2_95);
 }
 
 static void printPage2(Print &target) {
@@ -143,75 +142,74 @@ static void printPage3(Print &target) {
 
 static void printPage4(Print &target) {
 	target.println(F("\nPg 4 Cfg"));
-	void *pPage = &configPage4;
-	target.println(*((int16_t*)((byte*)pPage + 0))); // TrigAng
-	target.println(*((int8_t*)((byte*)pPage + 2))); // FixAng
-	target.println(*((uint8_t*)((byte*)pPage + 3))); // CrankAng
-	target.println(*((uint8_t*)((byte*)pPage + 4))); // TrigAngMul
-	target.println(((*((uint8_t*)((byte*)pPage + 5))) & 0x0001) >> 0); // TrigEdge
-	target.println(((*((uint8_t*)((byte*)pPage + 5))) & 0x0002) >> 1); // TrigSpeed
-	target.println(((*((uint8_t*)((byte*)pPage + 5))) & 0x0004) >> 2); // IgInv
-	target.println(((*((uint8_t*)((byte*)pPage + 5))) & 0x00F8) >> 3); // TrigPattern
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0001) >> 0); // TrigEdgeSec
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x007E) >> 1); // fuelPumpPin
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0080) >> 7); // useResync
-	target.println(*((uint8_t*)((byte*)pPage + 7))); // sparkDur
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x007F) >> 0); // trigPatternSec
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x0080) >> 7); // PollLevelPol
-	target.println(*((uint8_t*)((byte*)pPage + 9))); // bootloaderCaps
-	target.println(((*((uint8_t*)((byte*)pPage + 10))) & 0x0003) >> 0); // resetControl
-	target.println(((*((uint8_t*)((byte*)pPage + 10))) & 0x00FC) >> 2); // resetControlPin
-	target.println(*((uint8_t*)((byte*)pPage + 11))); // SkipCycles
-	target.println(((*((uint8_t*)((byte*)pPage + 12))) & 0x0001) >> 0); // boostType
-	target.println(((*((uint8_t*)((byte*)pPage + 12))) & 0x0002) >> 1); // useDwellLim
-	target.println(((*((uint8_t*)((byte*)pPage + 12))) & 0x001C) >> 2); // sparkMode
-	target.println(((*((uint8_t*)((byte*)pPage + 12))) & 0x0060) >> 5); // TrigFilter
-	target.println(((*((uint8_t*)((byte*)pPage + 12))) & 0x0080) >> 7); // ignCranklock
-	target.println(*((uint8_t*)((byte*)pPage + 13))); // dwellcrank
-	target.println(*((uint8_t*)((byte*)pPage + 14))); // dwellrun
-	target.println(*((uint8_t*)((byte*)pPage + 15))); // numTeeth
-	target.println(*((uint8_t*)((byte*)pPage + 16))); // missingTeeth
-	target.println(*((uint8_t*)((byte*)pPage + 17))); // crankRPM
-	target.println(*((uint8_t*)((byte*)pPage + 18))); // tpsflood
-	target.println(*((uint8_t*)((byte*)pPage + 19))); // SoftRevLim
-	target.println(*((uint8_t*)((byte*)pPage + 20))); // SoftLimRetard
-	target.println(*((uint8_t*)((byte*)pPage + 21))); // SoftLimMax
-	target.println(*((uint8_t*)((byte*)pPage + 22))); // HardRevLim
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 23), ((uint8_t*)((byte*)pPage + 23))+4); // taeBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 27), ((uint8_t*)((byte*)pPage + 27))+4); // taeRates
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 31), ((uint8_t*)((byte*)pPage + 31))+10); // wueBins
-	target.println(*((uint8_t*)((byte*)pPage + 41))); // dwellLim
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 42), ((uint8_t*)((byte*)pPage + 42))+6); // dwellRates
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 48), ((uint8_t*)((byte*)pPage + 48))+6); // iatRetBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 54), ((uint8_t*)((byte*)pPage + 54))+6); // iatRetRates
-	target.println(*((uint8_t*)((byte*)pPage + 60))); // dfcoRPM
-	target.println(*((uint8_t*)((byte*)pPage + 61))); // dfcoHyster
-	target.println(*((uint8_t*)((byte*)pPage + 62))); // dfcoTPSThresh
-	target.println(((*((uint8_t*)((byte*)pPage + 63))) & 0x0001) >> 0); // ignBypassEnable
-	target.println(((*((uint8_t*)((byte*)pPage + 63))) & 0x007E) >> 1); // ignBypassPin
-	target.println(((*((uint8_t*)((byte*)pPage + 63))) & 0x0080) >> 7); // ignBypassHiLo
-	target.println(*((uint8_t*)((byte*)pPage + 64))); // ADCFILTER_TPS
-	target.println(*((uint8_t*)((byte*)pPage + 65))); // ADCFILTER_CLT
-	target.println(*((uint8_t*)((byte*)pPage + 66))); // ADCFILTER_IAT
-	target.println(*((uint8_t*)((byte*)pPage + 67))); // ADCFILTER_O2
-	target.println(*((uint8_t*)((byte*)pPage + 68))); // ADCFILTER_BAT
-	target.println(*((uint8_t*)((byte*)pPage + 69))); // ADCFILTER_MAP
-	target.println(*((uint8_t*)((byte*)pPage + 70))); // ADCFILTER_BARO
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 71), ((uint8_t*)((byte*)pPage + 71))+6); // cltAdvBins
-	serial_print_space_delimited(target, (int8_t*)((byte*)pPage + 77), ((int8_t*)((byte*)pPage + 77))+6); // cltAdvValues
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 83), ((uint8_t*)((byte*)pPage + 83))+4); // maeBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 87), ((uint8_t*)((byte*)pPage + 87))+4); // maeRates
-	target.println(*((int8_t*)((byte*)pPage + 91))); // batVoltCorrect
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 92), ((uint8_t*)((byte*)pPage + 92))+8); // baroFuelBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 100), ((uint8_t*)((byte*)pPage + 100))+8); // baroFuelValues
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 108), ((uint8_t*)((byte*)pPage + 108))+6); // idleAdvBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 114), ((uint8_t*)((byte*)pPage + 114))+6); // idleAdvValues
-	target.println(*((uint8_t*)((byte*)pPage + 120))); // engineProtectMaxRPM
-	target.println(*((int16_t*)((byte*)pPage + 121))); // vvt2CL0DutyAng
-	target.println(((*((uint8_t*)((byte*)pPage + 123))) & 0x0001) >> 0); // vvt2PWMdir
-	target.println(((*((uint8_t*)((byte*)pPage + 123))) & 0x00FE) >> 1); // unusedBits4-123
-	target.println(*((uint8_t*)((byte*)pPage + 124))); // ANGLEFILTER_VVT
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 125), ((uint8_t*)((byte*)pPage + 125))+3); // unused4-124
+	target.println(configPage4.triggerAngle);
+	target.println(configPage4.FixAng);
+	target.println(configPage4.CrankAng);
+	target.println(configPage4.TrigAngMul);
+	target.println(configPage4.TrigEdge);
+	target.println(configPage4.TrigSpeed);
+	target.println(configPage4.IgInv);
+	target.println(configPage4.TrigPattern);
+	target.println(configPage4.TrigEdgeSec);
+	target.println(configPage4.fuelPumpPin);
+	target.println(configPage4.useResync);
+	target.println(configPage4.sparkDur);
+	target.println(configPage4.trigPatternSec);
+	target.println(configPage4.PollLevelPolarity);
+	target.println(configPage4.bootloaderCaps);
+	target.println(configPage4.resetControlPin);
+	target.println(configPage4.resetControlConfig);
+	target.println(configPage4.SkipCycles);
+	target.println(configPage4.boostType);
+	target.println(configPage4.useDwellLim);
+	target.println(configPage4.sparkMode);
+	target.println(configPage4.triggerFilter);
+	target.println(configPage4.ignCranklock);
+	target.println(configPage4.dwellCrank);
+	target.println(configPage4.dwellRun);
+	target.println(configPage4.triggerTeeth);
+	target.println(configPage4.triggerMissingTeeth);
+	target.println(configPage4.crankRPM);
+	target.println(configPage4.floodClear);
+	target.println(configPage4.SoftRevLim);
+	target.println(configPage4.SoftLimRetard);
+	target.println(configPage4.SoftLimMax);
+	target.println(configPage4.HardRevLim);
+	print_array(target, configPage4.taeBins);
+	print_array(target, configPage4.taeValues);
+	print_array(target, configPage4.wueBins);
+	target.println(configPage4.dwellLimit);
+	print_array(target, configPage4.dwellCorrectionValues);
+	print_array(target, configPage4.iatRetBins);
+	print_array(target, configPage4.iatRetValues);
+	target.println(configPage4.dfcoRPM);
+	target.println(configPage4.dfcoHyster);
+	target.println(configPage4.dfcoTPSThresh);
+	target.println(configPage4.ignBypassEnabled);
+	target.println(configPage4.ignBypassPin);
+	target.println(configPage4.ignBypassHiLo);
+	target.println(configPage4.ADCFILTER_TPS);
+	target.println(configPage4.ADCFILTER_CLT);
+	target.println(configPage4.ADCFILTER_IAT);
+	target.println(configPage4.ADCFILTER_O2);
+	target.println(configPage4.ADCFILTER_BAT);
+	target.println(configPage4.ADCFILTER_MAP);
+	target.println(configPage4.ADCFILTER_BARO);
+	print_array(target, configPage4.cltAdvBins);
+	print_array(target, configPage4.cltAdvValues);
+	print_array(target, configPage4.maeBins);
+	print_array(target, configPage4.maeRates);
+	target.println(configPage4.batVoltCorrect);
+	print_array(target, configPage4.baroFuelBins);
+	print_array(target, configPage4.baroFuelValues);
+	print_array(target, configPage4.idleAdvBins);
+	print_array(target, configPage4.idleAdvValues);
+	target.println(configPage4.engineProtectMaxRPM);
+	target.println(configPage4.vvt2CL0DutyAng);
+	target.println(configPage4.vvt2PWMdir);
+	target.println(configPage4.unusedBits4-123);
+	target.println(configPage4.ANGLEFILTER_VVT);
+	print_array(target, configPage4.unused4_124);
 }
 
 static void printPage5(Print &target) {
@@ -222,85 +220,84 @@ static void printPage5(Print &target) {
 
 static void printPage6(Print &target) {
 	target.println(F("\nPg 6 Cfg"));
-	void *pPage = &configPage6;
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0003) >> 0); // egoAlgorithm
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x000C) >> 2); // egoType
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0010) >> 4); // boostEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0020) >> 5); // vvtEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x00C0) >> 6); // engineProtectType
-	target.println(*((uint8_t*)((byte*)pPage + 1))); // egoKP
-	target.println(*((uint8_t*)((byte*)pPage + 2))); // egoKI
-	target.println(*((uint8_t*)((byte*)pPage + 3))); // egoKD
-	target.println(*((uint8_t*)((byte*)pPage + 4))); // egoTemp
-	target.println(*((uint8_t*)((byte*)pPage + 5))); // egoCount
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0003) >> 0); // vvtMode
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x000C) >> 2); // vvtLoadSource
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0010) >> 4); // vvtPWMdir
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0020) >> 5); // vvtCLUseHold
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0040) >> 6); // vvtCLAlterFuelTiming
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0080) >> 7); // boostCutEnabled
-	target.println(*((uint8_t*)((byte*)pPage + 7))); // egoLimit
-	target.println(*((uint8_t*)((byte*)pPage + 8))); // ego_min
-	target.println(*((uint8_t*)((byte*)pPage + 9))); // ego_max
-	target.println(*((uint8_t*)((byte*)pPage + 10))); // ego_sdelay
-	target.println(*((uint8_t*)((byte*)pPage + 11))); // egoRPM
-	target.println(*((uint8_t*)((byte*)pPage + 12))); // egoTPSMax
-	target.println(((*((uint8_t*)((byte*)pPage + 13))) & 0x003F) >> 0); // vvt1Pin
-	target.println(((*((uint8_t*)((byte*)pPage + 13))) & 0x0040) >> 6); // useExtBaro
-	target.println(((*((uint8_t*)((byte*)pPage + 13))) & 0x0080) >> 7); // boostMode
-	target.println(((*((uint8_t*)((byte*)pPage + 14))) & 0x003F) >> 0); // boostPin
-	target.println(((*((uint8_t*)((byte*)pPage + 14))) & 0x0040) >> 6); // unused_bit
-	target.println(((*((uint8_t*)((byte*)pPage + 14))) & 0x0080) >> 7); // useEMAP
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 15), ((uint8_t*)((byte*)pPage + 15))+6); // brvBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 21), ((uint8_t*)((byte*)pPage + 21))+6); // injBatRates
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 27), ((uint8_t*)((byte*)pPage + 27))+9); // airDenBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 36), ((uint8_t*)((byte*)pPage + 36))+9); // airDenRates
-	target.println(*((uint8_t*)((byte*)pPage + 45))); // boostFreq
-	target.println(*((uint8_t*)((byte*)pPage + 46))); // vvtFreq
-	target.println(*((uint8_t*)((byte*)pPage + 47))); // idleFreq
-	target.println(((*((uint8_t*)((byte*)pPage + 48))) & 0x003F) >> 0); // launchPin
-	target.println(((*((uint8_t*)((byte*)pPage + 48))) & 0x0040) >> 6); // launchEnable
-	target.println(((*((uint8_t*)((byte*)pPage + 48))) & 0x0080) >> 7); // launchHiLo
-	target.println(*((uint8_t*)((byte*)pPage + 49))); // lnchSoftLim
-	target.println(*((int8_t*)((byte*)pPage + 50))); // lnchRetard
-	target.println(*((uint8_t*)((byte*)pPage + 51))); // lnchHardLim
-	target.println(*((uint8_t*)((byte*)pPage + 52))); // lnchFuelAdd
-	target.println(*((uint8_t*)((byte*)pPage + 53))); // idleKP
-	target.println(*((uint8_t*)((byte*)pPage + 54))); // idleKI
-	target.println(*((uint8_t*)((byte*)pPage + 55))); // idleKD
-	target.println(*((uint8_t*)((byte*)pPage + 56))); // boostLimit
-	target.println(*((uint8_t*)((byte*)pPage + 57))); // boostKP
-	target.println(*((uint8_t*)((byte*)pPage + 58))); // boostKI
-	target.println(*((uint8_t*)((byte*)pPage + 59))); // boostKD
-	target.println(((*((uint8_t*)((byte*)pPage + 60))) & 0x0001) >> 0); // lnchPullRes
-	target.println(((*((uint8_t*)((byte*)pPage + 60))) & 0x0002) >> 1); // iacPWMrun
-	target.println(((*((uint8_t*)((byte*)pPage + 60))) & 0x0004) >> 2); // fuelTrimEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 60))) & 0x0008) >> 3); // flatSEnable
-	target.println(((*((uint8_t*)((byte*)pPage + 60))) & 0x00F0) >> 4); // baroPin
-	target.println(*((uint8_t*)((byte*)pPage + 61))); // flatSSoftWin
-	target.println(*((uint8_t*)((byte*)pPage + 62))); // flatSRetard
-	target.println(*((uint8_t*)((byte*)pPage + 63))); // flatSArm
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 64), ((uint8_t*)((byte*)pPage + 64))+10); // iacCLValues
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 74), ((uint8_t*)((byte*)pPage + 74))+10); // iacOLStepVal
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 84), ((uint8_t*)((byte*)pPage + 84))+10); // iacOLPWMVal
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 94), ((uint8_t*)((byte*)pPage + 94))+10); // iacBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 104), ((uint8_t*)((byte*)pPage + 104))+4); // iacCrankSteps
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 108), ((uint8_t*)((byte*)pPage + 108))+4); // iacCrankDuty
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 112), ((uint8_t*)((byte*)pPage + 112))+4); // iacCrankBins
-	target.println(((*((uint8_t*)((byte*)pPage + 116))) & 0x0007) >> 0); // iacAlgorithm
-	target.println(((*((uint8_t*)((byte*)pPage + 116))) & 0x0038) >> 3); // iacStepTime
-	target.println(((*((uint8_t*)((byte*)pPage + 116))) & 0x0040) >> 6); // iacChannels
-	target.println(((*((uint8_t*)((byte*)pPage + 116))) & 0x0080) >> 7); // iacPWMdir
-	target.println(*((uint8_t*)((byte*)pPage + 117))); // iacFastTemp
-	target.println(*((uint8_t*)((byte*)pPage + 118))); // iacStepHome
-	target.println(*((uint8_t*)((byte*)pPage + 119))); // iacStepHyster
-	target.println(((*((uint8_t*)((byte*)pPage + 120))) & 0x0001) >> 0); // fanInv
-	target.println(((*((uint8_t*)((byte*)pPage + 120))) & 0x0002) >> 1); // fanEnable
-	target.println(((*((uint8_t*)((byte*)pPage + 120))) & 0x00FC) >> 2); // fanPin
-	target.println(*((uint8_t*)((byte*)pPage + 121))); // fanSP
-	target.println(*((uint8_t*)((byte*)pPage + 122))); // fanHyster
-	target.println(*((uint8_t*)((byte*)pPage + 123))); // fanFreq
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 124), ((uint8_t*)((byte*)pPage + 124))+4); // fanPWMBins
+	target.println(configPage6.egoAlgorithm);
+	target.println(configPage6.egoType);
+	target.println(configPage6.boostEnabled);
+	target.println(configPage6.vvtEnabled);
+	target.println(configPage6.engineProtectType);
+	target.println(configPage6.egoKP);
+	target.println(configPage6.egoKI);
+	target.println(configPage6.egoKD);
+	target.println(configPage6.egoTemp);
+	target.println(configPage6.egoCount);
+	target.println(configPage6.vvtMode);
+	target.println(configPage6.vvtLoadSource);
+	target.println(configPage6.vvtPWMdir);
+	target.println(configPage6.vvtCLUseHold);
+	target.println(configPage6.vvtCLAlterFuelTiming);
+	target.println(configPage6.boostCutEnabled);
+	target.println(configPage6.egoLimit);
+	target.println(configPage6.ego_min);
+	target.println(configPage6.ego_max);
+	target.println(configPage6.ego_sdelay);
+	target.println(configPage6.egoRPM);
+	target.println(configPage6.egoTPSMax);
+	target.println(configPage6.vvt1Pin);
+	target.println(configPage6.useExtBaro);
+	target.println(configPage6.boostMode);
+	target.println(configPage6.boostPin);
+	target.println(configPage6.unused_bit);
+	target.println(configPage6.useEMAP);
+	print_array(target, configPage6.voltageCorrectionBins);
+	print_array(target, configPage6.injVoltageCorrectionValues);
+	print_array(target, configPage6.airDenBins);
+	print_array(target, configPage6.airDenRates);
+	target.println(configPage6.boostFreq);
+	target.println(configPage6.vvtFreq);
+	target.println(configPage6.idleFreq);
+	target.println(configPage6.launchPin);
+	target.println(configPage6.launchEnabled);
+	target.println(configPage6.launchHiLo);
+	target.println(configPage6.lnchSoftLim);
+	target.println(configPage6.lnchRetard);
+	target.println(configPage6.lnchHardLim);
+	target.println(configPage6.lnchFuelAdd);
+	target.println(configPage6.idleKP);
+	target.println(configPage6.idleKI);
+	target.println(configPage6.idleKD);
+	target.println(configPage6.boostLimit);
+	target.println(configPage6.boostKP);
+	target.println(configPage6.boostKI);
+	target.println(configPage6.boostKD);
+	target.println(configPage6.lnchPullRes);
+	target.println(configPage6.iacPWMrun);
+	target.println(configPage6.fuelTrimEnabled);
+	target.println(configPage6.flatSEnable);
+	target.println(configPage6.baroPin);
+	target.println(configPage6.flatSSoftWin);
+	target.println(configPage6.flatSRetard);
+	target.println(configPage6.flatSArm);
+	print_array(target, configPage6.iacCLValues);
+	print_array(target, configPage6.iacOLStepVal);
+	print_array(target, configPage6.iacOLPWMVal);
+	print_array(target, configPage6.iacBins);
+	print_array(target, configPage6.iacCrankSteps);
+	print_array(target, configPage6.iacCrankDuty);
+	print_array(target, configPage6.iacCrankBins);
+	target.println(configPage6.iacAlgorithm);
+	target.println(configPage6.iacStepTime);
+	target.println(configPage6.iacChannels);
+	target.println(configPage6.iacPWMdir);
+	target.println(configPage6.iacFastTemp);
+	target.println(configPage6.iacStepHome);
+	target.println(configPage6.iacStepHyster);
+	target.println(configPage6.fanInv);
+	target.println(configPage6.fanEnable);
+	target.println(configPage6.fanPin);
+	target.println(configPage6.fanSP);
+	target.println(configPage6.fanHyster);
+	target.println(configPage6.fanFreq);
+	print_array(target, configPage6.fanPWMBins);
 }
 
 static void printPage7(Print &target) {
@@ -319,336 +316,159 @@ static void printPage8(Print &target) {
 
 static void printPage9(Print &target) {
 	target.println(F("\nPg 9 Cfg"));
-	void *pPage = &configPage9;
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0001) >> 0); // enable_secondarySerial
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0002) >> 1); // intcan_available
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0004) >> 2); // enable_intcan
-	target.println(((*((uint8_t*)((byte*)pPage + 1))) & 0x0003) >> 0); // caninput_sel0a
-	target.println(((*((uint8_t*)((byte*)pPage + 1))) & 0x000C) >> 2); // caninput_sel0b
-	target.println(((*((uint8_t*)((byte*)pPage + 1))) & 0x0020) >> 5); // caninput_sel0extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 1))) & 0x0040) >> 6); // caninput_sel0extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 1))) & 0x0080) >> 7); // caninput_sel0extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 2))) & 0x0003) >> 0); // caninput_sel1a
-	target.println(((*((uint8_t*)((byte*)pPage + 2))) & 0x000C) >> 2); // caninput_sel1b
-	target.println(((*((uint8_t*)((byte*)pPage + 2))) & 0x0020) >> 5); // caninput_sel1extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 2))) & 0x0040) >> 6); // caninput_sel1extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 2))) & 0x0080) >> 7); // caninput_sel1extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x0003) >> 0); // caninput_sel2a
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x000C) >> 2); // caninput_sel2b
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x0020) >> 5); // caninput_sel2extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x0040) >> 6); // caninput_sel2extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x0080) >> 7); // caninput_sel2extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 4))) & 0x0003) >> 0); // caninput_sel3a
-	target.println(((*((uint8_t*)((byte*)pPage + 4))) & 0x000C) >> 2); // caninput_sel3b
-	target.println(((*((uint8_t*)((byte*)pPage + 4))) & 0x0020) >> 5); // caninput_sel3extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 4))) & 0x0040) >> 6); // caninput_sel3extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 4))) & 0x0080) >> 7); // caninput_sel3extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 5))) & 0x0003) >> 0); // caninput_sel4a
-	target.println(((*((uint8_t*)((byte*)pPage + 5))) & 0x000C) >> 2); // caninput_sel4b
-	target.println(((*((uint8_t*)((byte*)pPage + 5))) & 0x0020) >> 5); // caninput_sel4extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 5))) & 0x0040) >> 6); // caninput_sel4extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 5))) & 0x0080) >> 7); // caninput_sel4extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0003) >> 0); // caninput_sel5a
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x000C) >> 2); // caninput_sel5b
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0020) >> 5); // caninput_sel5extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0040) >> 6); // caninput_sel5extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x0080) >> 7); // caninput_sel5extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 7))) & 0x0003) >> 0); // caninput_sel6a
-	target.println(((*((uint8_t*)((byte*)pPage + 7))) & 0x000C) >> 2); // caninput_sel6b
-	target.println(((*((uint8_t*)((byte*)pPage + 7))) & 0x0020) >> 5); // caninput_sel6extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 7))) & 0x0040) >> 6); // caninput_sel6extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 7))) & 0x0080) >> 7); // caninput_sel6extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x0003) >> 0); // caninput_sel7a
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x000C) >> 2); // caninput_sel7b
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x0020) >> 5); // caninput_sel7extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x0040) >> 6); // caninput_sel7extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x0080) >> 7); // caninput_sel7extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 9))) & 0x0003) >> 0); // caninput_sel8a
-	target.println(((*((uint8_t*)((byte*)pPage + 9))) & 0x000C) >> 2); // caninput_sel8b
-	target.println(((*((uint8_t*)((byte*)pPage + 9))) & 0x0020) >> 5); // caninput_sel8extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 9))) & 0x0040) >> 6); // caninput_sel8extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 9))) & 0x0080) >> 7); // caninput_sel8extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 10))) & 0x0003) >> 0); // caninput_sel9a
-	target.println(((*((uint8_t*)((byte*)pPage + 10))) & 0x000C) >> 2); // caninput_sel9b
-	target.println(((*((uint8_t*)((byte*)pPage + 10))) & 0x0020) >> 5); // caninput_sel9extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 10))) & 0x0040) >> 6); // caninput_sel9extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 10))) & 0x0080) >> 7); // caninput_sel9extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 11))) & 0x0003) >> 0); // caninput_sel10a
-	target.println(((*((uint8_t*)((byte*)pPage + 11))) & 0x000C) >> 2); // caninput_sel10b
-	target.println(((*((uint8_t*)((byte*)pPage + 11))) & 0x0020) >> 5); // caninput_sel10extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 11))) & 0x0040) >> 6); // caninput_sel10extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 11))) & 0x0080) >> 7); // caninput_sel10extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 12))) & 0x0003) >> 0); // caninput_sel11a
-	target.println(((*((uint8_t*)((byte*)pPage + 12))) & 0x000C) >> 2); // caninput_sel11b
-	target.println(((*((uint8_t*)((byte*)pPage + 12))) & 0x0020) >> 5); // caninput_sel11extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 12))) & 0x0040) >> 6); // caninput_sel11extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 12))) & 0x0080) >> 7); // caninput_sel11extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 13))) & 0x0003) >> 0); // caninput_sel12a
-	target.println(((*((uint8_t*)((byte*)pPage + 13))) & 0x000C) >> 2); // caninput_sel12b
-	target.println(((*((uint8_t*)((byte*)pPage + 13))) & 0x0020) >> 5); // caninput_sel12extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 13))) & 0x0040) >> 6); // caninput_sel12extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 13))) & 0x0080) >> 7); // caninput_sel12extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 14))) & 0x0003) >> 0); // caninput_sel13a
-	target.println(((*((uint8_t*)((byte*)pPage + 14))) & 0x000C) >> 2); // caninput_sel13b
-	target.println(((*((uint8_t*)((byte*)pPage + 14))) & 0x0020) >> 5); // caninput_sel13extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 14))) & 0x0040) >> 6); // caninput_sel13extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 14))) & 0x0080) >> 7); // caninput_sel13extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 15))) & 0x0003) >> 0); // caninput_sel14a
-	target.println(((*((uint8_t*)((byte*)pPage + 15))) & 0x000C) >> 2); // caninput_sel14b
-	target.println(((*((uint8_t*)((byte*)pPage + 15))) & 0x0020) >> 5); // caninput_sel14extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 15))) & 0x0040) >> 6); // caninput_sel14extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 15))) & 0x0080) >> 7); // caninput_sel14extsourcec
-	target.println(((*((uint8_t*)((byte*)pPage + 16))) & 0x0003) >> 0); // caninput_sel15a
-	target.println(((*((uint8_t*)((byte*)pPage + 16))) & 0x000C) >> 2); // caninput_sel15b
-	target.println(((*((uint8_t*)((byte*)pPage + 16))) & 0x0020) >> 5); // caninput_sel15extsourcea
-	target.println(((*((uint8_t*)((byte*)pPage + 16))) & 0x0040) >> 6); // caninput_sel15extsourceb
-	target.println(((*((uint8_t*)((byte*)pPage + 16))) & 0x0080) >> 7); // caninput_sel15extsourcec
-	target.println(((*((uint16_t*)((byte*)pPage + 17))) & 0x07FF) >> 0); // caninput_source_can_address0
-	target.println(((*((uint16_t*)((byte*)pPage + 19))) & 0x07FF) >> 0); // caninput_source_can_address1
-	target.println(((*((uint16_t*)((byte*)pPage + 21))) & 0x07FF) >> 0); // caninput_source_can_address2
-	target.println(((*((uint16_t*)((byte*)pPage + 23))) & 0x07FF) >> 0); // caninput_source_can_address3
-	target.println(((*((uint16_t*)((byte*)pPage + 25))) & 0x07FF) >> 0); // caninput_source_can_address4
-	target.println(((*((uint16_t*)((byte*)pPage + 27))) & 0x07FF) >> 0); // caninput_source_can_address5
-	target.println(((*((uint16_t*)((byte*)pPage + 29))) & 0x07FF) >> 0); // caninput_source_can_address6
-	target.println(((*((uint16_t*)((byte*)pPage + 31))) & 0x07FF) >> 0); // caninput_source_can_address7
-	target.println(((*((uint16_t*)((byte*)pPage + 33))) & 0x07FF) >> 0); // caninput_source_can_address8
-	target.println(((*((uint16_t*)((byte*)pPage + 35))) & 0x07FF) >> 0); // caninput_source_can_address9
-	target.println(((*((uint16_t*)((byte*)pPage + 37))) & 0x07FF) >> 0); // caninput_source_can_address10
-	target.println(((*((uint16_t*)((byte*)pPage + 39))) & 0x07FF) >> 0); // caninput_source_can_address11
-	target.println(((*((uint16_t*)((byte*)pPage + 41))) & 0x07FF) >> 0); // caninput_source_can_address12
-	target.println(((*((uint16_t*)((byte*)pPage + 43))) & 0x07FF) >> 0); // caninput_source_can_address13
-	target.println(((*((uint16_t*)((byte*)pPage + 45))) & 0x07FF) >> 0); // caninput_source_can_address14
-	target.println(((*((uint16_t*)((byte*)pPage + 47))) & 0x07FF) >> 0); // caninput_source_can_address15
-	target.println(((*((uint8_t*)((byte*)pPage + 49))) & 0x0007) >> 0); // caninput_source_start_byte0
-	target.println(((*((uint8_t*)((byte*)pPage + 50))) & 0x0007) >> 0); // caninput_source_start_byte1
-	target.println(((*((uint8_t*)((byte*)pPage + 51))) & 0x0007) >> 0); // caninput_source_start_byte2
-	target.println(((*((uint8_t*)((byte*)pPage + 52))) & 0x0007) >> 0); // caninput_source_start_byte3
-	target.println(((*((uint8_t*)((byte*)pPage + 53))) & 0x0007) >> 0); // caninput_source_start_byte4
-	target.println(((*((uint8_t*)((byte*)pPage + 54))) & 0x0007) >> 0); // caninput_source_start_byte5
-	target.println(((*((uint8_t*)((byte*)pPage + 55))) & 0x0007) >> 0); // caninput_source_start_byte6
-	target.println(((*((uint8_t*)((byte*)pPage + 56))) & 0x0007) >> 0); // caninput_source_start_byte7
-	target.println(((*((uint8_t*)((byte*)pPage + 57))) & 0x0007) >> 0); // caninput_source_start_byte8
-	target.println(((*((uint8_t*)((byte*)pPage + 58))) & 0x0007) >> 0); // caninput_source_start_byte9
-	target.println(((*((uint8_t*)((byte*)pPage + 59))) & 0x0007) >> 0); // caninput_source_start_byte10
-	target.println(((*((uint8_t*)((byte*)pPage + 60))) & 0x0007) >> 0); // caninput_source_start_byte11
-	target.println(((*((uint8_t*)((byte*)pPage + 61))) & 0x0007) >> 0); // caninput_source_start_byte12
-	target.println(((*((uint8_t*)((byte*)pPage + 62))) & 0x0007) >> 0); // caninput_source_start_byte13
-	target.println(((*((uint8_t*)((byte*)pPage + 63))) & 0x0007) >> 0); // caninput_source_start_byte14
-	target.println(((*((uint8_t*)((byte*)pPage + 64))) & 0x0007) >> 0); // caninput_source_start_byte15
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0001) >> 0); // caninput_source_num_bytes0
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0002) >> 1); // caninput_source_num_bytes1
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0004) >> 2); // caninput_source_num_bytes2
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0008) >> 3); // caninput_source_num_bytes3
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0010) >> 4); // caninput_source_num_bytes4
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0020) >> 5); // caninput_source_num_bytes5
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0040) >> 6); // caninput_source_num_bytes6
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0080) >> 7); // caninput_source_num_bytes7
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0100) >> 8); // caninput_source_num_bytes8
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0200) >> 9); // caninput_source_num_bytes9
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0400) >> 10); // caninput_source_num_bytes10
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x0800) >> 11); // caninput_source_num_bytes11
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x1000) >> 12); // caninput_source_num_bytes12
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x2000) >> 13); // caninput_source_num_bytes13
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x4000) >> 14); // caninput_source_num_bytes14
-	target.println(((*((uint16_t*)((byte*)pPage + 65))) & 0x8000) >> 15); // caninput_source_num_bytes15
-	target.println(*((uint8_t*)((byte*)pPage + 67))); // unused10_67
-	target.println(*((uint8_t*)((byte*)pPage + 68))); // unused10_68
-	target.println(((*((uint8_t*)((byte*)pPage + 69))) & 0x0001) >> 0); // enable_intcandata_out
-	target.println(((*((uint8_t*)((byte*)pPage + 70))) & 0x0001) >> 0); // canoutput_sel0
-	target.println(((*((uint8_t*)((byte*)pPage + 71))) & 0x0001) >> 0); // canoutput_sel1
-	target.println(((*((uint8_t*)((byte*)pPage + 72))) & 0x0001) >> 0); // canoutput_sel2
-	target.println(((*((uint8_t*)((byte*)pPage + 73))) & 0x0001) >> 0); // canoutput_sel3
-	target.println(((*((uint8_t*)((byte*)pPage + 74))) & 0x0001) >> 0); // canoutput_sel4
-	target.println(((*((uint8_t*)((byte*)pPage + 75))) & 0x0001) >> 0); // canoutput_sel5
-	target.println(((*((uint8_t*)((byte*)pPage + 76))) & 0x0001) >> 0); // canoutput_sel6
-	target.println(((*((uint8_t*)((byte*)pPage + 77))) & 0x0001) >> 0); // canoutput_sel7
-	serial_print_space_delimited(target, (uint16_t*)((byte*)pPage + 78), ((uint16_t*)((byte*)pPage + 78))+8); // canoutput_param_group
-	target.println(((*((uint8_t*)((byte*)pPage + 94))) & 0x0007) >> 0); // canoutput_param_start_byte0
-	target.println(((*((uint8_t*)((byte*)pPage + 95))) & 0x0007) >> 0); // canoutput_param_start_byte1
-	target.println(((*((uint8_t*)((byte*)pPage + 96))) & 0x0007) >> 0); // canoutput_param_start_byte2
-	target.println(((*((uint8_t*)((byte*)pPage + 97))) & 0x0007) >> 0); // canoutput_param_start_byte3
-	target.println(((*((uint8_t*)((byte*)pPage + 98))) & 0x0007) >> 0); // canoutput_param_start_byte4
-	target.println(((*((uint8_t*)((byte*)pPage + 99))) & 0x0007) >> 0); // canoutput_param_start_byte5
-	target.println(((*((uint8_t*)((byte*)pPage + 100))) & 0x0007) >> 0); // canoutput_param_start_byte6
-	target.println(((*((uint8_t*)((byte*)pPage + 101))) & 0x0007) >> 0); // canoutput_param_start_byte7
-	target.println(((*((uint8_t*)((byte*)pPage + 102))) & 0x0003) >> 0); // canoutput_param_num_bytes0
-	target.println(((*((uint8_t*)((byte*)pPage + 103))) & 0x0003) >> 0); // canoutput_param_num_bytes1
-	target.println(((*((uint8_t*)((byte*)pPage + 104))) & 0x0003) >> 0); // canoutput_param_num_bytes2
-	target.println(((*((uint8_t*)((byte*)pPage + 105))) & 0x0003) >> 0); // canoutput_param_num_bytes3
-	target.println(((*((uint8_t*)((byte*)pPage + 106))) & 0x0003) >> 0); // canoutput_param_num_bytes4
-	target.println(((*((uint8_t*)((byte*)pPage + 107))) & 0x0003) >> 0); // canoutput_param_num_bytes5
-	target.println(((*((uint8_t*)((byte*)pPage + 108))) & 0x0003) >> 0); // canoutput_param_num_bytes6
-	target.println(((*((uint8_t*)((byte*)pPage + 109))) & 0x0003) >> 0); // canoutput_param_num_bytes7
-	target.println(*((uint8_t*)((byte*)pPage + 110))); // unused10_110
-	target.println(*((uint8_t*)((byte*)pPage + 111))); // unused10_111
-	target.println(*((uint8_t*)((byte*)pPage + 112))); // unused10_112
-	target.println(*((uint8_t*)((byte*)pPage + 113))); // unused10_113
-	target.println(((*((uint8_t*)((byte*)pPage + 114))) & 0x000F) >> 0); // speeduino_tsCanId
-	target.println(((*((uint16_t*)((byte*)pPage + 115))) & 0x07FF) >> 0); // true_address
-	target.println(((*((uint16_t*)((byte*)pPage + 117))) & 0x07FF) >> 0); // realtime_base_address
-	target.println(((*((uint16_t*)((byte*)pPage + 119))) & 0x07FF) >> 0); // obd_address
-	target.println(((*((uint8_t*)((byte*)pPage + 121))) & 0x003F) >> 0); // Auxin0pina
-	target.println(((*((uint8_t*)((byte*)pPage + 122))) & 0x003F) >> 0); // Auxin1pina
-	target.println(((*((uint8_t*)((byte*)pPage + 123))) & 0x003F) >> 0); // Auxin2pina
-	target.println(((*((uint8_t*)((byte*)pPage + 124))) & 0x003F) >> 0); // Auxin3pina
-	target.println(((*((uint8_t*)((byte*)pPage + 125))) & 0x003F) >> 0); // Auxin4pina
-	target.println(((*((uint8_t*)((byte*)pPage + 126))) & 0x003F) >> 0); // Auxin5pina
-	target.println(((*((uint8_t*)((byte*)pPage + 127))) & 0x003F) >> 0); // Auxin6pina
-	target.println(((*((uint8_t*)((byte*)pPage + 128))) & 0x003F) >> 0); // Auxin7pina
-	target.println(((*((uint8_t*)((byte*)pPage + 129))) & 0x003F) >> 0); // Auxin8pina
-	target.println(((*((uint8_t*)((byte*)pPage + 130))) & 0x003F) >> 0); // Auxin9pina
-	target.println(((*((uint8_t*)((byte*)pPage + 131))) & 0x003F) >> 0); // Auxin10pina
-	target.println(((*((uint8_t*)((byte*)pPage + 132))) & 0x003F) >> 0); // Auxin11pina
-	target.println(((*((uint8_t*)((byte*)pPage + 133))) & 0x003F) >> 0); // Auxin12pina
-	target.println(((*((uint8_t*)((byte*)pPage + 134))) & 0x003F) >> 0); // Auxin13pina
-	target.println(((*((uint8_t*)((byte*)pPage + 135))) & 0x003F) >> 0); // Auxin14pina
-	target.println(((*((uint8_t*)((byte*)pPage + 136))) & 0x003F) >> 0); // Auxin15pina
-	target.println(((*((uint8_t*)((byte*)pPage + 137))) & 0x003F) >> 0); // Auxin0pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 138))) & 0x003F) >> 0); // Auxin1pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 139))) & 0x003F) >> 0); // Auxin2pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 140))) & 0x003F) >> 0); // Auxin3pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 141))) & 0x003F) >> 0); // Auxin4pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 142))) & 0x003F) >> 0); // Auxin5pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 143))) & 0x003F) >> 0); // Auxin6pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 144))) & 0x003F) >> 0); // Auxin7pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 145))) & 0x003F) >> 0); // Auxin8pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 146))) & 0x003F) >> 0); // Auxin9pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 147))) & 0x003F) >> 0); // Auxin10pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 148))) & 0x003F) >> 0); // Auxin11pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 149))) & 0x003F) >> 0); // Auxin12pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 150))) & 0x003F) >> 0); // Auxin13pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 151))) & 0x003F) >> 0); // Auxin14pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 152))) & 0x003F) >> 0); // Auxin15pinb
-	target.println(((*((uint8_t*)((byte*)pPage + 153))) & 0x0001) >> 0); // iacStepperInv
-	target.println(((*((uint8_t*)((byte*)pPage + 153))) & 0x000E) >> 1); // iacCoolTime
-	target.println(((*((uint8_t*)((byte*)pPage + 153))) & 0x0010) >> 4); // blankfield
-	target.println(((*((uint8_t*)((byte*)pPage + 153))) & 0x00E0) >> 5); // unused10_153
-	target.println(*((uint8_t*)((byte*)pPage + 154))); // iacMaxSteps
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 155), ((uint8_t*)((byte*)pPage + 155))+37); // unused10_154
+	target.println(configPage9.enable_secondarySerial);
+	target.println(configPage9.intcan_available);
+	target.println(configPage9.enable_intcan);
+	print_array(target, configPage9.caninput_sel);
+	print_array(target, configPage9.caninput_source_can_address);
+	print_array(target, configPage9.caninput_source_start_byte);
+	target.println(configPage9.caninput_source_num_bytes);
+	target.println(configPage9.unused10_67);
+	target.println(configPage9.unused10_68);
+	target.println(configPage9.enable_candata_out);
+	print_array(target, configPage9.canoutput_sel);
+	print_array(target, configPage9.canoutput_param_group);
+	print_array(target, configPage9.canoutput_param_start_byte);
+	print_array(target, configPage9.canoutput_param_num_bytes);
+	target.println(configPage9.unused10_110);
+	target.println(configPage9.unused10_111);
+	target.println(configPage9.unused10_112);
+	target.println(configPage9.unused10_113);
+	target.println(configPage9.speeduino_tsCanId);
+	target.println(configPage9.true_address);
+	target.println(configPage9.realtime_base_address);
+	target.println(configPage9.obd_address);
+	print_array(target, configPage9.Auxinpina);
+	print_array(target, configPage9.Auxinpinb);
+	target.println(configPage9.iacStepperInv);
+	target.println(configPage9.iacCoolTime);
+	target.println(configPage9.blankfield);
+	target.println(configPage9.unused10_153);
+	target.println(configPage9.iacMaxSteps);
+	print_array(target, configPage9.unused10_154);
 }
 
 static void printPage10(Print &target) {
 	target.println(F("\nPg 10 Cfg"));
-	void *pPage = &configPage10;
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 0), ((uint8_t*)((byte*)pPage + 0))+4); // crankingEnrichBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 4), ((uint8_t*)((byte*)pPage + 4))+4); // crankingEnrichValues
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x0003) >> 0); // rotaryType
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x0004) >> 2); // stagingEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x0008) >> 3); // stagingMode
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x00F0) >> 4); // EMAPPin
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 9), ((uint8_t*)((byte*)pPage + 9))+8); // rotarySplitValues
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 17), ((uint8_t*)((byte*)pPage + 17))+8); // rotarySplitBins
-	target.println(*((uint16_t*)((byte*)pPage + 25))); // boostSens
-	target.println(*((uint8_t*)((byte*)pPage + 27))); // boostIntv
-	target.println(*((uint16_t*)((byte*)pPage + 28))); // stagedInjSizePri
-	target.println(*((uint16_t*)((byte*)pPage + 30))); // stagedInjSizeSec
-	target.println(*((uint8_t*)((byte*)pPage + 32))); // lnchCtrlTPS
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 33), ((uint8_t*)((byte*)pPage + 33))+6); // flexBoostBins
-	serial_print_space_delimited(target, (int16_t*)((byte*)pPage + 39), ((int16_t*)((byte*)pPage + 39))+6); // flexBoostAdj
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 51), ((uint8_t*)((byte*)pPage + 51))+6); // flexFuelBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 57), ((uint8_t*)((byte*)pPage + 57))+6); // flexFuelAdj
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 63), ((uint8_t*)((byte*)pPage + 63))+6); // flexAdvBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 69), ((uint8_t*)((byte*)pPage + 69))+6); // flexAdvAdj
-	target.println(((*((uint8_t*)((byte*)pPage + 75))) & 0x0003) >> 0); // n2o_enable
-	target.println(((*((uint8_t*)((byte*)pPage + 75))) & 0x00FC) >> 2); // n2o_arming_pin
-	target.println(*((uint8_t*)((byte*)pPage + 76))); // n2o_minCLT
-	target.println(*((uint8_t*)((byte*)pPage + 77))); // n2o_maxMAP
-	target.println(*((uint8_t*)((byte*)pPage + 78))); // n2o_minTPS
-	target.println(*((uint8_t*)((byte*)pPage + 79))); // n2o_maxAFR
-	target.println(((*((uint8_t*)((byte*)pPage + 80))) & 0x003F) >> 0); // n2o_stage1_pin
-	target.println(((*((uint8_t*)((byte*)pPage + 80))) & 0x0040) >> 6); // n2o_pin_polarity
-	target.println(((*((uint8_t*)((byte*)pPage + 80))) & 0x0080) >> 7); // n2o_unused
-	target.println(*((uint8_t*)((byte*)pPage + 81))); // n2o_stage1_minRPM
-	target.println(*((uint8_t*)((byte*)pPage + 82))); // n2o_stage1_maxRPM
-	target.println(*((uint8_t*)((byte*)pPage + 83))); // n2o_stage1_adderMin
-	target.println(*((uint8_t*)((byte*)pPage + 84))); // n2o_stage1_adderMax
-	target.println(*((uint8_t*)((byte*)pPage + 85))); // n2o_stage1_retard
-	target.println(((*((uint8_t*)((byte*)pPage + 86))) & 0x003F) >> 0); // n2o_stage2_pin
-	target.println(((*((uint8_t*)((byte*)pPage + 86))) & 0x00C0) >> 6); // n2o_stage2_unused
-	target.println(*((uint8_t*)((byte*)pPage + 87))); // n2o_stage2_minRPM
-	target.println(*((uint8_t*)((byte*)pPage + 88))); // n2o_stage2_maxRPM
-	target.println(*((uint8_t*)((byte*)pPage + 89))); // n2o_stage2_adderMin
-	target.println(*((uint8_t*)((byte*)pPage + 90))); // n2o_stage2_adderMax
-	target.println(*((uint8_t*)((byte*)pPage + 91))); // n2o_stage2_retard
-	target.println(((*((uint8_t*)((byte*)pPage + 92))) & 0x0003) >> 0); // knock_mode
-	target.println(((*((uint8_t*)((byte*)pPage + 92))) & 0x00FC) >> 2); // knock_pin
-	target.println(((*((uint8_t*)((byte*)pPage + 93))) & 0x0001) >> 0); // knock_trigger
-	target.println(((*((uint8_t*)((byte*)pPage + 93))) & 0x0002) >> 1); // knock_pullup
-	target.println(((*((uint8_t*)((byte*)pPage + 93))) & 0x0004) >> 2); // knock_limiterDisable
-	target.println(((*((uint8_t*)((byte*)pPage + 93))) & 0x0018) >> 3); // knock_unused
-	target.println(((*((uint8_t*)((byte*)pPage + 93))) & 0x00E0) >> 5); // knock_count
-	target.println(*((uint8_t*)((byte*)pPage + 94))); // knock_threshold
-	target.println(*((uint8_t*)((byte*)pPage + 95))); // knock_maxMAP
-	target.println(*((uint8_t*)((byte*)pPage + 96))); // knock_maxRPM
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 97), ((uint8_t*)((byte*)pPage + 97))+6); // knock_window_rpms
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 103), ((uint8_t*)((byte*)pPage + 103))+6); // knock_window_angle
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 109), ((uint8_t*)((byte*)pPage + 109))+6); // knock_window_dur
-	target.println(*((uint8_t*)((byte*)pPage + 115))); // knock_maxRetard
-	target.println(*((uint8_t*)((byte*)pPage + 116))); // knock_firstStep
-	target.println(*((uint8_t*)((byte*)pPage + 117))); // knock_stepSize
-	target.println(*((uint8_t*)((byte*)pPage + 118))); // knock_stepTime
-	target.println(*((uint8_t*)((byte*)pPage + 119))); // knock_duration
-	target.println(*((uint8_t*)((byte*)pPage + 120))); // knock_recoveryStepTime
-	target.println(*((uint8_t*)((byte*)pPage + 121))); // knock_recoveryStep
-	target.println(((*((uint8_t*)((byte*)pPage + 122))) & 0x0007) >> 0); // fuel2Algorithm
-	target.println(((*((uint8_t*)((byte*)pPage + 122))) & 0x0038) >> 3); // fuel2Mode
-	target.println(((*((uint8_t*)((byte*)pPage + 122))) & 0x00C0) >> 6); // fuel2SwitchVariable
-	target.println(*((uint16_t*)((byte*)pPage + 123))); // fuel2SwitchValue
-	target.println(((*((uint8_t*)((byte*)pPage + 125))) & 0x003F) >> 0); // fuel2InputPin
-	target.println(((*((uint8_t*)((byte*)pPage + 125))) & 0x0040) >> 6); // fuel2InputPolarity
-	target.println(((*((uint8_t*)((byte*)pPage + 125))) & 0x0080) >> 7); // fuel2InputPullup
-	target.println(*((uint8_t*)((byte*)pPage + 126))); // vvtCLholdDuty
-	target.println(*((uint8_t*)((byte*)pPage + 127))); // vvtCLKP
-	target.println(*((uint8_t*)((byte*)pPage + 128))); // vvtCLKI
-	target.println(*((uint8_t*)((byte*)pPage + 129))); // vvtCLKD
-	target.println(*((int16_t*)((byte*)pPage + 130))); // vvtCL0DutyAng
-	target.println(*((uint8_t*)((byte*)pPage + 132))); // vvtCLMinAng
-	target.println(*((uint8_t*)((byte*)pPage + 133))); // vvtCLMaxAng
-	target.println(*((uint8_t*)((byte*)pPage + 134))); // crankingEnrichTaper
-	target.println(((*((uint8_t*)((byte*)pPage + 135))) & 0x0001) >> 0); // fuelPressureEnable
-	target.println(((*((uint8_t*)((byte*)pPage + 135))) & 0x0002) >> 1); // oilPressureEnable
-	target.println(((*((uint8_t*)((byte*)pPage + 135))) & 0x0004) >> 2); // oilPressureProtEnbl
-	target.println(((*((uint8_t*)((byte*)pPage + 135))) & 0x00F8) >> 3); // oilPressurePin
-	target.println(((*((uint8_t*)((byte*)pPage + 136))) & 0x001F) >> 0); // fuelPressurePin
-	target.println(*((int8_t*)((byte*)pPage + 137))); // fuelPressureMin
-	target.println(*((uint8_t*)((byte*)pPage + 138))); // fuelPressureMax
-	target.println(*((int8_t*)((byte*)pPage + 139))); // oilPressureMin
-	target.println(*((uint8_t*)((byte*)pPage + 140))); // oilPressureMax
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 141), ((uint8_t*)((byte*)pPage + 141))+4); // oilPressureProtRPM
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 145), ((uint8_t*)((byte*)pPage + 145))+4); // oilPressureProtMins
-	target.println(((*((uint8_t*)((byte*)pPage + 149))) & 0x0001) >> 0); // wmiEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 149))) & 0x0006) >> 1); // wmiMode
-	target.println(((*((uint8_t*)((byte*)pPage + 149))) & 0x0080) >> 7); // wmiAdvEnabled
-	target.println(*((uint8_t*)((byte*)pPage + 150))); // wmiTPS
-	target.println(*((uint8_t*)((byte*)pPage + 151))); // wmiRPM
-	target.println(*((uint8_t*)((byte*)pPage + 152))); // wmiMAP
-	target.println(*((uint8_t*)((byte*)pPage + 153))); // wmiMAP2
-	target.println(*((uint8_t*)((byte*)pPage + 154))); // wmiIAT
-	target.println(*((int8_t*)((byte*)pPage + 155))); // wmiOffset
-	target.println(((*((uint8_t*)((byte*)pPage + 156))) & 0x0001) >> 0); // wmiIndicatorEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 156))) & 0x007E) >> 1); // wmiIndicatorPin
-	target.println(((*((uint8_t*)((byte*)pPage + 156))) & 0x0080) >> 7); // wmiIndicatorPolarity
-	target.println(((*((uint8_t*)((byte*)pPage + 157))) & 0x0001) >> 0); // wmiEmptyEnabled
-	target.println(((*((uint8_t*)((byte*)pPage + 157))) & 0x007E) >> 1); // wmiEmptyPin
-	target.println(((*((uint8_t*)((byte*)pPage + 157))) & 0x0080) >> 7); // wmiEmptyPolarity
-	target.println(((*((uint8_t*)((byte*)pPage + 158))) & 0x003F) >> 0); // wmiEnabledPin
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 159), ((uint8_t*)((byte*)pPage + 159))+6); // wmiAdvBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 165), ((uint8_t*)((byte*)pPage + 165))+6); // wmiAdvAdj
-	target.println(*((uint8_t*)((byte*)pPage + 171))); // vvtCLminDuty
-	target.println(*((uint8_t*)((byte*)pPage + 172))); // vvtCLmaxDuty
-	target.println(((*((uint8_t*)((byte*)pPage + 173))) & 0x003F) >> 0); // vvt2Pin
-	target.println(((*((uint8_t*)((byte*)pPage + 173))) & 0x0040) >> 6); // vvt2Enabled
-	target.println(((*((uint8_t*)((byte*)pPage + 173))) & 0x0080) >> 7); // TrigEdgeThrd
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 174), ((uint8_t*)((byte*)pPage + 174))+6); // fuelTempBins
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 180), ((uint8_t*)((byte*)pPage + 180))+6); // fuelTempValues
-	target.println(((*((uint8_t*)((byte*)pPage + 186))) & 0x0007) >> 0); // spark2Algorithm
-	target.println(((*((uint8_t*)((byte*)pPage + 186))) & 0x0038) >> 3); // spark2Mode
-	target.println(((*((uint8_t*)((byte*)pPage + 186))) & 0x00C0) >> 6); // spark2SwitchVariable
-	target.println(*((uint16_t*)((byte*)pPage + 187))); // spark2SwitchValue
-	target.println(((*((uint8_t*)((byte*)pPage + 189))) & 0x003F) >> 0); // spark2InputPin
-	target.println(((*((uint8_t*)((byte*)pPage + 189))) & 0x0040) >> 6); // spark2InputPolarity
-	target.println(((*((uint8_t*)((byte*)pPage + 189))) & 0x0080) >> 7); // spark2InputPullup
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 190), ((uint8_t*)((byte*)pPage + 190))+2); // unused11_190_191
+	print_array(target, configPage10.crankingEnrichBins);
+	print_array(target, configPage10.crankingEnrichValues);
+	target.println(configPage10.rotaryType);
+	target.println(configPage10.stagingEnabled);
+	target.println(configPage10.stagingMode);
+	target.println(configPage10.EMAPPin);
+	print_array(target, configPage10.rotarySplitValues);
+	print_array(target, configPage10.rotarySplitBins);
+	target.println(configPage10.boostSens);
+	target.println(configPage10.boostIntv);
+	target.println(configPage10.stagedInjSizePri);
+	target.println(configPage10.stagedInjSizeSec);
+	target.println(configPage10.lnchCtrlTPS);
+	print_array(target, configPage10.flexBoostBins);
+	print_array(target, configPage10.flexBoostAdj);
+	print_array(target, configPage10.flexFuelBins);
+	print_array(target, configPage10.flexFuelAdj);
+	print_array(target, configPage10.flexAdvBins);
+	print_array(target, configPage10.flexAdvAdj);
+	target.println(configPage10.n2o_enable);
+	target.println(configPage10.n2o_arming_pin);
+	target.println(configPage10.n2o_minCLT);
+	target.println(configPage10.n2o_maxMAP);
+	target.println(configPage10.n2o_minTPS);
+	target.println(configPage10.n2o_maxAFR);
+	target.println(configPage10.n2o_stage1_pin);
+	target.println(configPage10.n2o_pin_polarity);
+	target.println(configPage10.n2o_stage1_unused);
+	target.println(configPage10.n2o_stage1_minRPM);
+	target.println(configPage10.n2o_stage1_maxRPM);
+	target.println(configPage10.n2o_stage1_adderMin);
+	target.println(configPage10.n2o_stage1_adderMax);
+	target.println(configPage10.n2o_stage1_retard);
+	target.println(configPage10.n2o_stage2_pin);
+	target.println(configPage10.n2o_stage2_unused);
+	target.println(configPage10.n2o_stage2_minRPM);
+	target.println(configPage10.n2o_stage2_maxRPM);
+	target.println(configPage10.n2o_stage2_adderMin);
+	target.println(configPage10.n2o_stage2_adderMax);
+	target.println(configPage10.n2o_stage2_retard);
+	target.println(configPage10.knock_mode);
+	target.println(configPage10.knock_pin);
+	target.println(configPage10.knock_count);
+	target.println(configPage10.knock_unused);
+	target.println(configPage10.knock_limiterDisable);
+	target.println(configPage10.knock_pullup);
+	target.println(configPage10.knock_trigger);
+	target.println(configPage10.knock_threshold);
+	target.println(configPage10.knock_maxMAP);
+	target.println(configPage10.knock_maxRPM);
+	print_array(target, configPage10.knock_window_rpms);
+	print_array(target, configPage10.knock_window_angle);
+	print_array(target, configPage10.knock_window_dur);
+	target.println(configPage10.knock_maxRetard);
+	target.println(configPage10.knock_firstStep);
+	target.println(configPage10.knock_stepSize);
+	target.println(configPage10.knock_stepTime);
+	target.println(configPage10.knock_duration);
+	target.println(configPage10.knock_recoveryStepTime);
+	target.println(configPage10.knock_recoveryStep);
+	target.println(configPage10.fuel2Algorithm);
+	target.println(configPage10.fuel2Mode);
+	target.println(configPage10.fuel2SwitchVariable);
+	target.println(configPage10.fuel2SwitchValue);
+	target.println(configPage10.fuel2InputPin);
+	target.println(configPage10.fuel2InputPolarity);
+	target.println(configPage10.fuel2InputPullup);
+	target.println(configPage10.vvtCLholdDuty);
+	target.println(configPage10.vvtCLKP);
+	target.println(configPage10.vvtCLKI);
+	target.println(configPage10.vvtCLKD);
+	target.println(configPage10.vvtCL0DutyAng);
+	target.println(configPage10.vvtCLMinAng);
+	target.println(configPage10.vvtCLMaxAng);
+	target.println(configPage10.crankingEnrichTaper);
+	target.println(configPage10.fuelPressureEnable);
+	target.println(configPage10.oilPressureEnable);
+	target.println(configPage10.oilPressureProtEnbl);
+	target.println(configPage10.oilPressurePin);
+	target.println(configPage10.fuelPressurePin);
+	target.println(configPage10.fuelPressureMin);
+	target.println(configPage10.fuelPressureMax);
+	target.println(configPage10.oilPressureMin);
+	target.println(configPage10.oilPressureMax);
+	print_array(target, configPage10.oilPressureProtRPM);
+	print_array(target, configPage10.oilPressureProtMins);
+	target.println(configPage10.wmiEnabled);
+	target.println(configPage10.wmiMode);
+	target.println(configPage10.wmiAdvEnabled);
+	target.println(configPage10.wmiTPS);
+	target.println(configPage10.wmiRPM);
+	target.println(configPage10.wmiMAP);
+	target.println(configPage10.wmiMAP2);
+	target.println(configPage10.wmiIAT);
+	target.println(configPage10.wmiOffset);
+	target.println(configPage10.wmiIndicatorEnabled);
+	target.println(configPage10.wmiIndicatorPin);
+	target.println(configPage10.wmiIndicatorPolarity);
+	target.println(configPage10.wmiEmptyEnabled);
+	target.println(configPage10.wmiEmptyPin);
+	target.println(configPage10.wmiEmptyPolarity);
+	target.println(configPage10.wmiEnabledPin);
+	print_array(target, configPage10.wmiAdvBins);
+	print_array(target, configPage10.wmiAdvAdj);
+	target.println(configPage10.vvtCLminDuty);
+	target.println(configPage10.vvtCLmaxDuty);
+	target.println(configPage10.vvt2Pin);
+	target.println(configPage10.vvt2Enabled);
+	target.println(configPage10.TrigEdgeThrd);
+	print_array(target, configPage10.fuelTempBins);
+	print_array(target, configPage10.fuelTempValues);
+	target.println(configPage10.spark2Algorithm);
+	target.println(configPage10.spark2Mode);
+	target.println(configPage10.spark2SwitchVariable);
+	target.println(configPage10.spark2SwitchValue);
+	target.println(configPage10.spark2InputPin);
+	target.println(configPage10.spark2InputPolarity);
+	target.println(configPage10.spark2InputPullup);
+	print_array(target, configPage10.unused11_187_191);
 }
 
 static void printPage11(Print &target) {
@@ -667,73 +487,41 @@ static void printPage12(Print &target) {
 
 static void printPage13(Print &target) {
 	target.println(F("\nPg 13 Cfg"));
-	void *pPage = &configPage13;
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0001) >> 0); // outputInverted0
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0002) >> 1); // outputInverted1
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0004) >> 2); // outputInverted2
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0008) >> 3); // outputInverted3
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0010) >> 4); // outputInverted4
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0020) >> 5); // outputInverted5
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0040) >> 6); // outputInverted6
-	target.println(((*((uint8_t*)((byte*)pPage + 0))) & 0x0080) >> 7); // outputInverted7
-	target.println(*((uint8_t*)((byte*)pPage + 1))); // unused12_1
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 2), ((uint8_t*)((byte*)pPage + 2))+8); // outputPin
-	target.println(((*((uint8_t*)((byte*)pPage + 2))) & 0x00FF) >> 0); // outputPin0
-	target.println(((*((uint8_t*)((byte*)pPage + 3))) & 0x00FF) >> 0); // outputPin1
-	target.println(((*((uint8_t*)((byte*)pPage + 4))) & 0x00FF) >> 0); // outputPin2
-	target.println(((*((uint8_t*)((byte*)pPage + 5))) & 0x00FF) >> 0); // outputPin3
-	target.println(((*((uint8_t*)((byte*)pPage + 6))) & 0x00FF) >> 0); // outputPin4
-	target.println(((*((uint8_t*)((byte*)pPage + 7))) & 0x00FF) >> 0); // outputPin5
-	target.println(((*((uint8_t*)((byte*)pPage + 8))) & 0x00FF) >> 0); // outputPin6
-	target.println(((*((uint8_t*)((byte*)pPage + 9))) & 0x00FF) >> 0); // outputPin7
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 10), ((uint8_t*)((byte*)pPage + 10))+8); // outputDelay
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 18), ((uint8_t*)((byte*)pPage + 18))+8); // firstDataIn
-	target.println(((*((uint8_t*)((byte*)pPage + 18))) & 0x00FF) >> 0); // firstDataIn0
-	target.println(((*((uint8_t*)((byte*)pPage + 19))) & 0x00FF) >> 0); // firstDataIn1
-	target.println(((*((uint8_t*)((byte*)pPage + 20))) & 0x00FF) >> 0); // firstDataIn2
-	target.println(((*((uint8_t*)((byte*)pPage + 21))) & 0x00FF) >> 0); // firstDataIn3
-	target.println(((*((uint8_t*)((byte*)pPage + 22))) & 0x00FF) >> 0); // firstDataIn4
-	target.println(((*((uint8_t*)((byte*)pPage + 23))) & 0x00FF) >> 0); // firstDataIn5
-	target.println(((*((uint8_t*)((byte*)pPage + 24))) & 0x00FF) >> 0); // firstDataIn6
-	target.println(((*((uint8_t*)((byte*)pPage + 25))) & 0x00FF) >> 0); // firstDataIn7
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 26), ((uint8_t*)((byte*)pPage + 26))+8); // secondDataIn
-	target.println(((*((uint8_t*)((byte*)pPage + 26))) & 0x00FF) >> 0); // secondDataIn0
-	target.println(((*((uint8_t*)((byte*)pPage + 27))) & 0x00FF) >> 0); // secondDataIn1
-	target.println(((*((uint8_t*)((byte*)pPage + 28))) & 0x00FF) >> 0); // secondDataIn2
-	target.println(((*((uint8_t*)((byte*)pPage + 29))) & 0x00FF) >> 0); // secondDataIn3
-	target.println(((*((uint8_t*)((byte*)pPage + 30))) & 0x00FF) >> 0); // secondDataIn4
-	target.println(((*((uint8_t*)((byte*)pPage + 31))) & 0x00FF) >> 0); // secondDataIn5
-	target.println(((*((uint8_t*)((byte*)pPage + 32))) & 0x00FF) >> 0); // secondDataIn6
-	target.println(((*((uint8_t*)((byte*)pPage + 33))) & 0x00FF) >> 0); // secondDataIn7
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 34), ((uint8_t*)((byte*)pPage + 34))+16); // unused13_35_49
-	serial_print_space_delimited(target, (int16_t*)((byte*)pPage + 50), ((int16_t*)((byte*)pPage + 50))+8); // firstTarget
-	serial_print_space_delimited(target, (int16_t*)((byte*)pPage + 66), ((int16_t*)((byte*)pPage + 66))+8); // secondTarget
-	target.println(((*((uint8_t*)((byte*)pPage + 82))) & 0x0007) >> 0); // firstCompType0
-	target.println(((*((uint8_t*)((byte*)pPage + 82))) & 0x0038) >> 3); // secondCompType0
-	target.println(((*((uint8_t*)((byte*)pPage + 82))) & 0x00C0) >> 6); // bitwise0
-	target.println(((*((uint8_t*)((byte*)pPage + 83))) & 0x0007) >> 0); // firstCompType1
-	target.println(((*((uint8_t*)((byte*)pPage + 83))) & 0x0038) >> 3); // secondCompType1
-	target.println(((*((uint8_t*)((byte*)pPage + 83))) & 0x00C0) >> 6); // bitwise1
-	target.println(((*((uint8_t*)((byte*)pPage + 84))) & 0x0007) >> 0); // firstCompType2
-	target.println(((*((uint8_t*)((byte*)pPage + 84))) & 0x0038) >> 3); // secondCompType2
-	target.println(((*((uint8_t*)((byte*)pPage + 84))) & 0x00C0) >> 6); // bitwise2
-	target.println(((*((uint8_t*)((byte*)pPage + 85))) & 0x0007) >> 0); // firstCompType3
-	target.println(((*((uint8_t*)((byte*)pPage + 85))) & 0x0038) >> 3); // secondCompType3
-	target.println(((*((uint8_t*)((byte*)pPage + 85))) & 0x00C0) >> 6); // bitwise3
-	target.println(((*((uint8_t*)((byte*)pPage + 86))) & 0x0007) >> 0); // firstCompType4
-	target.println(((*((uint8_t*)((byte*)pPage + 86))) & 0x0038) >> 3); // secondCompType4
-	target.println(((*((uint8_t*)((byte*)pPage + 86))) & 0x00C0) >> 6); // bitwise4
-	target.println(((*((uint8_t*)((byte*)pPage + 87))) & 0x0007) >> 0); // firstCompType5
-	target.println(((*((uint8_t*)((byte*)pPage + 87))) & 0x0038) >> 3); // secondCompType5
-	target.println(((*((uint8_t*)((byte*)pPage + 87))) & 0x00C0) >> 6); // bitwise5
-	target.println(((*((uint8_t*)((byte*)pPage + 88))) & 0x0007) >> 0); // firstCompType6
-	target.println(((*((uint8_t*)((byte*)pPage + 88))) & 0x0038) >> 3); // secondCompType6
-	target.println(((*((uint8_t*)((byte*)pPage + 88))) & 0x00C0) >> 6); // bitwise6
-	target.println(((*((uint8_t*)((byte*)pPage + 89))) & 0x0007) >> 0); // firstCompType7
-	target.println(((*((uint8_t*)((byte*)pPage + 89))) & 0x0038) >> 3); // secondCompType7
-	target.println(((*((uint8_t*)((byte*)pPage + 89))) & 0x00C0) >> 6); // bitwise7
-	serial_print_space_delimited(target, (uint16_t*)((byte*)pPage + 90), ((uint16_t*)((byte*)pPage + 90))+8); // candID
-	serial_print_space_delimited(target, (uint8_t*)((byte*)pPage + 106), ((uint8_t*)((byte*)pPage + 106))+22); // unused12_106_127
+	target.println(configPage13.outputInverted);
+	target.println(configPage13.unused12_1);
+	print_array(target, configPage13.outputPin);
+	print_array(target, configPage13.outputDelay);
+	print_array(target, configPage13.firstDataIn);
+	print_array(target, configPage13.secondDataIn);
+	print_array(target, configPage13.unused_13);
+	print_array(target, configPage13.firstTarget);
+	print_array(target, configPage13.secondTarget);
+	target.println(configPage13.bitwise0);
+	target.println(configPage13.secondCompType0);
+	target.println(configPage13.firstCompType0);
+	target.println(configPage13.firstCompType1);
+	target.println(configPage13.secondCompType1);
+	target.println(configPage13.bitwise1);
+	target.println(configPage13.firstCompType2);
+	target.println(configPage13.secondCompType2);
+	target.println(configPage13.bitwise2);
+	target.println(configPage13.bitwise3);
+	target.println(configPage13.firstCompType3);
+	target.println(configPage13.secondCompType3);
+	target.println(configPage13.firstCompType4);
+	target.println(configPage13.secondCompType4);
+	target.println(configPage13.bitwise4);
+	target.println(configPage13.firstCompType5);
+	target.println(configPage13.secondCompType5);
+	target.println(configPage13.bitwise5);
+	target.println(configPage13.firstCompType6);
+	target.println(configPage13.secondCompType6);
+	target.println(configPage13.bitwise6);
+	target.println(configPage13.firstCompType7);
+	target.println(configPage13.secondCompType7);
+	target.println(configPage13.bitwise7);
+	print_array(target, configPage13.candID);
+	print_array(target, configPage13.unused12_106_127);
 }
 
 static void printPage14(Print &target) {

@@ -4,10 +4,11 @@ enum IniItemType {
     KeyValue
     ScalarField
     BitField
-    ArrayField
+    OneDimArrayField
     StringField
-    Table3dValuesField
+    TwoDimArrayField
     IfDef
+    Define
 }
 
 Function Get-TsIniContent {
@@ -21,163 +22,148 @@ Function Get-TsIniContent {
         [ValidateNotNullOrEmpty()]
         [Parameter( Mandatory = $true, ValueFromPipeline = $true )]
         [String]
-        $FilePath,
-
-        # Specify what characters should be describe a comment.
-        # Lines starting with the characters provided will be rendered as comments.
-        # Default: ";"
-        [Char[]]
-        $CommentChar = @(";"),
-
-        # Remove lines determined to be comments from the resulting dictionary.
-        [Switch]
-        $IgnoreComments
+        $FilePath
     )
 
     Begin {
-        $types = @{
-            "S08" = "int8_t"
-            "S16" = "int16_t"
-            "U08" = "uint8_t"
-            "U16" = "uint16_t"
-        }
-       
-        function Get-Offset($hashTable) {
-            if ($matches.ContainsKey("offset")) {
-                return [int]$matches["offset"]
-            } else {
-                return $null
-            }
-        }
-
-        function Get-RemainingValues([string]$rest) {
-            if ($null -ne $rest) {
-                return @($rest.Split(",") | ForEach-Object { $_.Trim() })
-            } else {
-                return $null
-            }
-        }
-
         function New-SwitchRegex([string]$regex) {
             return [Regex]::new($regex, 'Compiled, IgnoreCase, CultureInvariant')
         }
 
-        Write-Debug "PsBoundParameters:"
-        $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Debug $_ }
-        if ($PSBoundParameters['Debug']) {
-            $DebugPreference = 'Continue'
-        }
-        Write-Debug "DebugPreference: $DebugPreference"
-
-        Write-Verbose "$($MyInvocation.MyCommand.Name):: Function started"
-     
         $regexComma = "(?:\s*,\s*)"
-        $keyRegEx = "(?<key>.+)"        
-        $dataTypeRegex = "(?<type>.\d+)$regexComma"
-        $fieldOffsetRegex = "(?<offset>\d+)$regexComma"
-        $fieldNameRegex = "`"(?<name>.+)`""
-        $otherRegEx = "($regexComma(?<other>.+)*)?"
+        $keyRegEx = "^\s*(?<key>[^;].+)\s*"
+        $dataTypeRegex = "$regexComma(?<type>.\d+)"
+        $fieldOffsetRegex = "$regexComma(?<offset>\d+)"
+        $otherRegEx = "($regexComma(?<other>.+))*"
 
-        $commentRegex = New-SwitchRegex "^\s*([$($CommentChar -join '')].*)$"
+        $commentRegex = New-SwitchRegex "^\s*(;.*)$"
         $sectionRegex = New-SwitchRegex "^\s*\[(.+)\]\s*$"
-        $keyValueRegex = New-SwitchRegex "^\s*(.+?)\s*=\s*(['`"]?)(.*)\2\s*$"
-        $scalarRegEx = New-SwitchRegex "$keyRegEx=(?:\s*scalar)$regexComma$dataTypeRegex(?:$fieldOffsetRegex)?(?:$fieldNameRegex)?$otherRegEx"
-        $bitRegEx = New-SwitchRegex "$keyRegEx=(?:\s*bits)$regexComma$dataTypeRegex(?:$fieldOffsetRegex)?(?:\[(?<bitStart>\d+):(?<bitEnd>\d+)\])$otherRegEx"
-        $arrayRegEx = New-SwitchRegex "$keyRegEx=(?:\s*array)$regexComma$dataTypeRegex(?:$fieldOffsetRegex)?(?:\[\s*(?<length>\d+)\s*\])$otherRegEx"
-        $table3DValuesRegex = New-SwitchRegex "$keyRegEx=(?:\s*array)$regexComma$dataTypeRegex(?:$fieldOffsetRegex)?(?:\[\s*(?<xDim>\d+)x(?<yDim>\d+)\s*\])"
-        $beginIfdefRegEx   = New-SwitchRegex "^\s*#if\s+.*$"
+        $keyValueRegex = New-SwitchRegex "$keyRegEx=\s*(?<value>.*)\s*$"
+        $scalarRegEx = New-SwitchRegex "$keyRegEx=(?:\s*scalar)$dataTypeRegex(?:$fieldOffsetRegex)?$otherRegEx"
+        $bitRegEx = New-SwitchRegex "$keyRegEx=(?:\s*bits)$dataTypeRegex(?:$fieldOffsetRegex)?$regexComma(?:\[(?<bitStart>\d+):(?<bitEnd>\d+)\])$otherRegEx"
+        $oneDimArrayRegex = New-SwitchRegex "$keyRegEx=(?:\s*array)$dataTypeRegex(?:$fieldOffsetRegex)?$regexComma(?:\[\s*(?<length>\d+)\s*\])$otherRegEx"
+        $twoDimArrayRegex = New-SwitchRegex "$keyRegEx=(?:\s*array)$dataTypeRegex(?:$fieldOffsetRegex)?$regexComma(?:\[\s*(?<xDim>\d+)x(?<yDim>\d+)\s*\])$otherRegEx"
+        $beginIfdefRegEx   = New-SwitchRegex "^\s*#if\s+(?<condition>.*)\s*$"
         $elseIfdefRegEx   = New-SwitchRegex "^\s*#else\s*$"
         $endIfdefRegEx   = New-SwitchRegex "^\s*#endif\s*$"
         $stringRegEx = New-SwitchRegex "$keyRegEx=(?:\s*string)$regexComma(?<encoding>.+)$regexComma(?:\s*(?<length>\d+))"
-        
+        $defineRegEx = New-SwitchRegex "^\s*#define\s+(?<condition>.+)\s*=\s*(?<value>.+)\s*$"
+
         $section = New-Object System.Collections.ArrayList
         $content = $section
         $ifDef = $null
 
-        Write-Debug ("commentRegex is {0}." -f $commentRegex)
-    }
-
-    Process {       
-        Write-Verbose "$($MyInvocation.MyCommand.Name):: Processing file: $Filepath"
-
         $ini = @{}
         $sectionName = "None"
 
+        Write-Verbose "$($MyInvocation.MyCommand.Name):: Processing file: $Filepath"
+
         if (!(Test-Path $Filepath)) {
             Write-Verbose ("Warning: `"{0}`" was not found." -f $Filepath)
+        }        
+    }
+
+    Process {
+        $types = @{
+            "S08" = @( "int8_t", 1 )
+            "S16" = @( "int16_t", 2 )
+            "U08" = @( "uint8_t", 1 )
+            "U16" = @( "uint16_t", 2 )
+        }
+
+        function Get-RemainingValues([string]$rest) {
+            return @(${rest}?.Split(",") | ForEach-Object { $_.Trim() })
+        }
+
+        function New-Field {
+            $fieldName = $matches["key"].Trim()
+            Write-Verbose "$($MyInvocation.MyCommand.Name):: Adding field: $fieldName"
+
+            return [PSCustomObject]@{
+                Key = $fieldName
+                DataType = $types[$matches["type"].Trim()]
+                Offset = [int]($matches["offset"] ?? -1)
+                Other = [array](Get-RemainingValues $matches["other"])
+            }
         }
 
         switch -regex -file $FilePath {
             $sectionRegex {
-                # Section
+                # Store last section
                 $ini[$sectionName] = $section
-
-                $sectionName = $matches[1].ToString()
+                # Begin new section
+                $sectionName = $matches[1].ToString().Trim()
                 $section = New-Object System.Collections.ArrayList 
                 $content = $section
                 Write-Verbose "$($MyInvocation.MyCommand.Name):: Adding section : $sectionName"
+
                 continue
             }
             $commentRegex {
                 # Comment
-                if (!$IgnoreComments) {
-                    $value = $matches[1].ToString()
-                    Write-Verbose "$($MyInvocation.MyCommand.Name):: Adding $name with value: $value"   
-                    $content.Add([PSCustomObject]@{
-                        Type = [IniItemType]::Comment; 
-                        Value = $value
-                    }) | Out-Null
-                }
-                else {
-                    Write-Debug ("Ignoring comment {0}." -f $matches[1])
-                }
+                $comment = $matches[0].Trim()
+                Write-Verbose "$($MyInvocation.MyCommand.Name):: Adding comment: $comment"   
+                $content.Add([PSCustomObject]@{
+                    Type = [IniItemType]::Comment; 
+                    Value = $comment
+                }) | Out-Null
+
                 continue
             }
             $scalarRegEx {
-                $content.Add([PSCustomObject]@{
-                    Type = [IniItemType]::ScalarField
-                    Key = $matches["key"].Trim()
-                    DataType = $types[$matches["type"]]
-                    FieldName = $matches["name"]
-                    Offset = Get-Offset $matches
-                    Other = [array](Get-RemainingValues $matches["other"])
-                }) | Out-Null
+                $content.Add( `
+                    ((New-Field) | ForEach-Object { 
+                        Add-Member -InputObject $_ -PassThru -NotePropertyMembers @{
+                            Type = [IniItemType]::ScalarField
+                            OffsetEnd = $_.Offset
+                        }
+                    })
+                ) | Out-Null                
 
                 continue
             }            
             $bitRegEx {
-                $content.Add([PSCustomObject]@{
-                    Type = [IniItemType]::BitField
-                    Key = $matches["key"].Trim()
-                    DataType = $types[$matches["type"]]
-                    FieldName = $matches["name"]
-                    Offset = Get-Offset $matches
-                    BitStart = [int]$matches["BitStart"]
-                    BitEnd = [int]$matches["BitEnd"]
-                }) | Out-Null
+                $content.Add( `
+                    ((New-Field) | ForEach-Object { 
+                        Add-Member -InputObject $_ -PassThru -NotePropertyMembers @{
+                            Type = [IniItemType]::BitField
+                            BitStart = [int]$matches["BitStart"]
+                            BitEnd = [int]$matches["BitEnd"]
+                            OffsetEnd = $_.Offset
+                        }
+                    })
+                ) | Out-Null
 
                 continue
             }
-            $table3DValuesRegex {
-                $content.Add([PSCustomObject]@{
-                    Type = [IniItemType]::Table3dValuesField
-                    Key = $matches["key"].Trim()
-                    xDim = [int]$matches["xDim"]
-                    yDim = [int]$matches["yDim"]
-                    DataType = $types[$matches["type"]]
-                    Offset = Get-Offset $matches
-                }) | Out-Null
+            $twoDimArrayRegex {
+                $xDim = [int]$matches["xDim"]
+                $yDim = [int]$matches["yDim"]
 
-                continue                
+                $content.Add( `
+                    ((New-Field) | ForEach-Object { 
+                        Add-Member -InputObject $_ -PassThru -NotePropertyMembers @{
+                            Type = [IniItemType]::TwoDimArrayField
+                            xDim = $xDim
+                            yDim = $yDim
+                            OffsetEnd = $_.Offset + ($xDim * $yDim * $_.DataType[1])
+                        }
+                    })
+                ) | Out-Null
+
+                continue
             }
-            $arrayRegEx {
-                $content.Add([PSCustomObject]@{
-                    Type = [IniItemType]::ArrayField
-                    Key = $matches["key"].Trim()
-                    Length = [int]$matches["length"]
-                    DataType = $types[$matches["type"]]
-                    Offset = Get-Offset $matches
-                }) | Out-Null
+            $oneDimArrayRegex {
+                $length = [int]$matches["length"]
+                $content.Add( `
+                    ((New-Field) | ForEach-Object { 
+                        Add-Member -InputObject $_ -PassThru -NotePropertyMembers @{
+                            Type = [IniItemType]::OneDimArrayField
+                            Length = $length
+                            OffsetEnd = $_.Offset + (($length-1)*$_.DataType[1])
+                        }
+                    })
+                ) | Out-Null
 
                 continue
             }
@@ -185,27 +171,36 @@ Function Get-TsIniContent {
                 $content.Add([PSCustomObject]@{
                     Type = [IniItemType]::StringField
                     Key = $matches["key"].Trim()
-                    Encoding = $types[$matches["encoding"]]
                     Length = [int]$matches["length"]
                 }) | Out-Null
 
-                continue                
+                continue
+            }
+            $defineRegEx {
+                $content.Add([PSCustomObject]@{
+                    Type = [IniItemType]::Define
+                    Condition = $matches["condition"].Trim()
+                    Values = $matches["value"].Trim()
+                }) | Out-Null
+
+                continue
             }
             $keyValueRegex {
-                # Key
-                $name, $value = $matches[1, 3]
+                $key = $matches["key"].Trim()
+                $value = $matches["value"].Trim()
                 Write-Verbose "$($MyInvocation.MyCommand.Name):: Adding key $name with value: $value"     
                 $content.Add([PSCustomObject]@{
                     Type = [IniItemType]::KeyValue
-                    Key = $name.ToString()
-                    Values = [array](Get-RemainingValues $value.ToString())
+                    Key = $key
+                    Values = [array](Get-RemainingValues $value)
                 }) | Out-Null
+
                 continue
             }
             $beginIfdefRegEx  {
                 $ifDef = [PSCustomObject]@{
                     Type = [IniItemType]::IfDef 
-                    IfDef = $matches[0]
+                    IfDef = $matches["condition"]
                     If = New-Object System.Collections.ArrayList
                     Else = New-Object System.Collections.ArrayList}
                 $content = $ifDef.If
@@ -235,11 +230,10 @@ Function Get-TsIniContent {
                 continue
             }
         }
-        Write-Verbose "$($MyInvocation.MyCommand.Name):: Finished Processing file: $FilePath"
-        Write-Output $ini
     }
 
     End {
-        Write-Verbose "$($MyInvocation.MyCommand.Name):: Function ended"
+        Write-Verbose "$($MyInvocation.MyCommand.Name):: Finished Processing file: $FilePath"
+        $ini
     }
 }

@@ -6,7 +6,7 @@
 # 
 # The generated code is not stand alone. It relies on supporting code defined in the Speeduino codebase
 #
-# Example usage: Gen-PrintPageAscii.ps1 > ..\speeduino\page_printascii.g.hpp
+# Example usage: .\Gen-PrintPageAscii.ps1 > ..\speeduino\page_printascii.g.hpp
 param (
     [string]$iniFilePath = "$PSScriptRoot\..\reference\speeduino.ini"
 )
@@ -25,13 +25,6 @@ $table = $null
 $tables = $ini["TableEditor"] |
             # Find all non-comment lines
             Where-Object { $_.Type -ne [IniItemType]::Comment } |
-            # Take one side of any #if
-            ForEach-Object {
-                if ($_.Type -eq [IniItemType]::IfDef) {
-                    return $_.If
-                }
-                return $_
-            } |
             # Tag each line with it's table name
             ForEach-Object {
                 if ($_.Type -eq [IniItemType]::KeyValue -and $_.Key -eq 'table') {
@@ -42,7 +35,7 @@ $tables = $ini["TableEditor"] |
 
 # Helper to look up a 3d table from an INI field. Will return $null if not a table.
 function Get-Table($field) {
-    return ($tables | Where-Object { $_.Values[0] -eq $field.Key } | Select-Object -First 1).Table
+    return ($tables | Where-Object { $_.Values[0] -eq $field.Key } | Select-Object -First 1)?.Table
 }
 
 # Collect all page fields & bundle into pages.
@@ -77,59 +70,101 @@ $pages = $ini["Constants"] |
 
 #endregion
 
-#region Code print helpers
-
-function Get-FieldValuePointer($field) {
-    return "($($field.DataType)*)((byte*)pPage + $($field.Offset))"
-}
-
-function Get-FieldValue($field) {
-    return "*(" + (Get-FieldValuePointer $field) + ")"
-}
-
-#endregion
-
 #region Code printers
 
 $outputName = "target";
 
+function Get-FullFieldName($field) {
+    return "configPage$($field.Page).$($field.Key)"
+}
+
 function Out-Scalar($field) {
-    $fieldGet = Get-FieldValue $field
-    Write-Output "`t$outputName.println($fieldGet); // $($field.Key)"
+    Write-Output "`t$outputName.println($(Get-FullFieldName $field));"
 }
 
 function Out-Bit($field) {
-    $strMask = "0x" + ($field.BitStart..$field.BitEnd | ForEach-Object { $mask=0 } { $mask = $mask -bor (1 -shl $_) } { $mask }).ToString('X4')
-    $fieldGet = Get-FieldValue $field
-    $fieldValue = "(($fieldGet) & $strMask) >> $($field.BitStart)"
-    Write-Output "`t$outputName.println($fieldValue); // $($field.Key)"
+    Write-Output "`t$outputName.println($(Get-FullFieldName $field));"
 }
 
 function Out-Array($field) {
-    $pStart = Get-FieldValuePointer $field
-    Write-Output "`tserial_print_space_delimited($outputName, $pStart, ($pStart)+$($field.Length)); // $($field.Key)"
+    Write-Output "`tprint_array($outputName, $(Get-FullFieldName $field));"
 }
 
 function Out-Fields($page, $fields) {
-    if ($null -ne $fields -and $fields.Count -gt 0) {
-        Write-Output "`tvoid *pPage = &configPage$($page);" 
-    }
-    $fields | ForEach-Object {
+    $fields | Where-Object { $null -ne $_ } | ForEach-Object {
         $field = $_
         switch ($field.Type) {
             ScalarField { Out-Scalar $field }
             BitField { Out-Bit $field }
-            ArrayField { Out-Array $field }
+            OneDimArrayField { Out-Array $field }
+            default { throw "Unknown field type: $_"}
         }
     }
 }
 
 function Out-Tables($tables) {
-    $tables | ForEach-Object {
+    $tables | Where-Object { $null -ne $_ } | ForEach-Object {
         $tableName = $_.Values[2].Replace("`"", "")
         Write-Output "`t$outputName.println(F(`"\n$tableName`"));"
         Write-Output "`tserial_print_3dtable($outputName, $($_.Values[0]));"
     }        
+}
+
+function Group-Overlapping($fields) {
+    function Group-OverlappingHelper {
+        [CmdletBinding()]
+   
+        Param(
+            [Parameter( Mandatory = $true, ValueFromPipeline = $true )]
+            $field
+        )
+    
+        Begin {
+            $groups = New-Object System.Collections.ArrayList
+        }
+    
+        Process {
+            function Test-Overlapping($field1, $field2) {
+                function Test-Helper($field1, $field2) {
+                    return ($field1.Offset -ge $field2.Offset) -and ($field1.Offset -le $field2.OffsetEnd)
+                }
+            
+                return (Test-Helper $field1 $field2) -or (Test-Helper $field2 $field1)
+            }
+
+            function New-Group {
+                return New-Object System.Collections.ArrayList
+            }
+    
+            if ($null -eq $group) {
+                # First record
+                $group = New-Group
+            } elseif (-not (Test-Overlapping $group[0] $field)) {
+                # Doesn't overlap - store old group & start a new group
+                $groups.Add($group) | Out-Null
+                $group = New-Group
+            }
+            # Add record to the group
+            $group.Add($field) | Out-Null            
+        }
+    
+        End {
+            $groups.Add($group) | Out-Null
+            $groups
+        }
+    }
+      
+    return $fields | 
+            # The sorting here is critical for the Group-OverlappingHelper algorithm
+            # Sort by start address ascending, then end address descending. I.e. for
+            # any overlapping fields, put the widest field first
+            Sort-Object -Property @{
+                    Expression = "Offset"
+                    Descending = $false},
+                @{
+                    Expression = "OffsetEnd"
+                    Descending = $true} |
+            Group-OverlappingHelper
 }
 
 function Get-PrintPageFunctionName($page) {
@@ -140,7 +175,23 @@ function Out-PrintPageAscii($page) {
     Write-Output ("static void " + (Get-PrintPageFunctionName $page) + "(Print &target) {")
     Write-Output "`t$outputName.println(F(`"\nPg $($page.Name) Cfg`"));"
     
-    Out-Fields $page.Name @($page.Group | Where-Object { $null -eq $_.Table3d })
+    # Deal with overlapping fields
+    $fields = 
+        Group-Overlapping ($page.Group | Where-Object { $null -eq $_.Table3d }) |
+        ForEach-Object { 
+            if ($_.Count -gt 1 -and `
+                # Assume groups that are all bit fields do not really overlap
+                ($null -ne ($_ | Where-Object { $_.Type -ne [IniItemType]::BitField}))) 
+            {
+                # Pick the widest non-bit field
+                return $_ | Where-Object { $_.Type -ne [IniItemType]::BitField} | 
+                            Sort-Object -Property Size -Descending | 
+                            Select-Object -First 1
+            }
+            return $_
+        }
+
+    Out-Fields $page.Name $fields
     
     # Each table in the INI file is at least 3 entries
     Out-Tables @($page.Group | 
