@@ -34,12 +34,12 @@ static void printPage1(Print &target) {
 	target.println(configPage1.displayB2);
 	target.println(configPage1.reqFuel);
 	target.println(configPage1.divider);
-	target.println(configPage1.indInjAng);
-	target.println(configPage1.ignAlgorithm);
-	target.println(configPage1.hardCutType);
-	target.println(configPage1.multiplyMAP_old);
 	target.println(configPage1.injTiming);
+	target.println(configPage1.multiplyMAP_old);
 	target.println(configPage1.includeAFR);
+	target.println(configPage1.hardCutType);
+	target.println(configPage1.ignAlgorithm);
+	target.println(configPage1.indInjAng);
 	target.println(configPage1.injOpen);
 	print_array(target, configPage1.injAng);
 	target.println(configPage1.mapSample);
@@ -49,13 +49,13 @@ static void printPage1(Print &target) {
 	target.println(configPage1.algorithm);
 	target.println(configPage1.fixAngEnable);
 	target.println(configPage1.nInjectors);
-	target.println(configPage1.legacyMAP);
-	target.println(configPage1.dfcoEnabled);
-	target.println(configPage1.perToothIgn);
-	target.println(configPage1.injLayout);
-	target.println(configPage1.flexEnabled);
 	target.println(configPage1.engineType);
+	target.println(configPage1.flexEnabled);
+	target.println(configPage1.legacyMAP);
 	target.println(configPage1.baroCorr);
+	target.println(configPage1.injLayout);
+	target.println(configPage1.perToothIgn);
+	target.println(configPage1.dfcoEnabled);
 	target.println(configPage1.aeColdTaperMax);
 	target.println(configPage1.dutyLim);
 	target.println(configPage1.flexFreqLow);
@@ -94,9 +94,9 @@ static void printPage1(Print &target) {
 	print_array(target, configPage1.aseBins);
 	print_array(target, configPage1.primePulse);
 	print_array(target, configPage1.primeBins);
-	target.println(configPage1.CTPSEnabled);
-	target.println(configPage1.CTPSPolarity);
 	target.println(configPage1.CTPSPin);
+	target.println(configPage1.CTPSPolarity);
+	target.println(configPage1.CTPSEnabled);
 	target.println(configPage1.idleAdvEnabled);
 	target.println(configPage1.idleAdvAlgorithm);
 	target.println(configPage1.idleAdvDelay);
@@ -157,8 +157,8 @@ static void printPage4(Print &target) {
 	target.println(configPage4.trigPatternSec);
 	target.println(configPage4.PollLevelPolarity);
 	target.println(configPage4.bootloaderCaps);
-	target.println(configPage4.resetControlPin);
 	target.println(configPage4.resetControlConfig);
+	target.println(configPage4.resetControlPin);
 	target.println(configPage4.SkipCycles);
 	target.println(configPage4.boostType);
 	target.println(configPage4.useDwellLim);
@@ -302,16 +302,32 @@ static void printPage6(Print &target) {
 
 static void printPage7(Print &target) {
 	target.println(F("\nPg 7 Cfg"));
-	target.println(F("\nFuel Staging Table"));
-	serial_print_3dtable(target, stagingTable);
 	target.println(F("\nBoost Duty / Target"));
 	serial_print_3dtable(target, boostTable);
+	target.println(F("\nVVT control Table"));
+	serial_print_3dtable(target, vvtTable);
+	target.println(F("\nFuel Staging Table"));
+	serial_print_3dtable(target, stagingTable);
 }
 
 static void printPage8(Print &target) {
 	target.println(F("\nPg 8 Cfg"));
 	target.println(F("\nFuel trim Table 1"));
 	serial_print_3dtable(target, trim1Table);
+	target.println(F("\nFuel trim Table 2"));
+	serial_print_3dtable(target, trim2Table);
+	target.println(F("\nFuel trim Table 3"));
+	serial_print_3dtable(target, trim3Table);
+	target.println(F("\nFuel trim Table 4"));
+	serial_print_3dtable(target, trim4Table);
+	target.println(F("\nFuel trim Table 5"));
+	serial_print_3dtable(target, trim5Table);
+	target.println(F("\nFuel trim Table 6"));
+	serial_print_3dtable(target, trim6Table);
+	target.println(F("\nFuel trim Table 7"));
+	serial_print_3dtable(target, trim7Table);
+	target.println(F("\nFuel trim Table 8"));
+	serial_print_3dtable(target, trim8Table);
 }
 
 static void printPage9(Print &target) {
@@ -392,11 +408,11 @@ static void printPage10(Print &target) {
 	target.println(configPage10.n2o_stage2_retard);
 	target.println(configPage10.knock_mode);
 	target.println(configPage10.knock_pin);
-	target.println(configPage10.knock_count);
-	target.println(configPage10.knock_unused);
-	target.println(configPage10.knock_limiterDisable);
-	target.println(configPage10.knock_pullup);
 	target.println(configPage10.knock_trigger);
+	target.println(configPage10.knock_pullup);
+	target.println(configPage10.knock_limiterDisable);
+	target.println(configPage10.knock_unused);
+	target.println(configPage10.knock_count);
 	target.println(configPage10.knock_threshold);
 	target.println(configPage10.knock_maxMAP);
 	target.println(configPage10.knock_maxRPM);
@@ -479,10 +495,12 @@ static void printPage11(Print &target) {
 
 static void printPage12(Print &target) {
 	target.println(F("\nPg 12 Cfg"));
-	target.println(F("\nDwell map"));
-	serial_print_3dtable(target, dwellTable);
 	target.println(F("\nWMI control Table"));
 	serial_print_3dtable(target, wmiTable);
+	target.println(F("\nVVT2 control Table"));
+	serial_print_3dtable(target, vvt2Table);
+	target.println(F("\nDwell map"));
+	serial_print_3dtable(target, dwellTable);
 }
 
 static void printPage13(Print &target) {
@@ -496,18 +514,18 @@ static void printPage13(Print &target) {
 	print_array(target, configPage13.unused_13);
 	print_array(target, configPage13.firstTarget);
 	print_array(target, configPage13.secondTarget);
-	target.println(configPage13.bitwise0);
-	target.println(configPage13.secondCompType0);
 	target.println(configPage13.firstCompType0);
+	target.println(configPage13.secondCompType0);
+	target.println(configPage13.bitwise0);
 	target.println(configPage13.firstCompType1);
 	target.println(configPage13.secondCompType1);
 	target.println(configPage13.bitwise1);
 	target.println(configPage13.firstCompType2);
 	target.println(configPage13.secondCompType2);
 	target.println(configPage13.bitwise2);
-	target.println(configPage13.bitwise3);
 	target.println(configPage13.firstCompType3);
 	target.println(configPage13.secondCompType3);
+	target.println(configPage13.bitwise3);
 	target.println(configPage13.firstCompType4);
 	target.println(configPage13.secondCompType4);
 	target.println(configPage13.bitwise4);
