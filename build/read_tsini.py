@@ -1,17 +1,24 @@
+"""
+Functions to parse a TunerStudio INI file.
+
+The TunerStudio INI format doesn't follow the normal INI conventions.
+E.g. sections can have duplicate keys, section contents are ordered.
+"""
+
 import re
 import more_itertools
 import itertools
 
-from itertools import groupby
+# Common partial regex definitions
+_regexComma = r'(?:\s*,\s*)' # Whitespaced comma
+_keyRegEx = r'^\s*(?P<key>[^;].+)\s*=' # Ini file key. E.g.  '   foo  ='
+_dataTypeRegex = fr'{_regexComma}(?P<type>[S|U]\d+)' # Comma prefixed data type. E.g. ' , S16 ' 
+_fieldOffsetRegex = fr'{_regexComma}(?P<offset>\d+)' # Comma prefixed number
+_otherRegEx = fr'({_regexComma}(?P<other>.+))*' # Comma prefixed anything
 
-_regexComma = r'(?:\s*,\s*)'
-_keyRegEx = r'^\s*(?P<key>[^;].+)\s*'
-_dataTypeRegex = fr'{_regexComma}(?P<type>.\d+)'
-_fieldOffsetRegex = fr'{_regexComma}(?P<offset>\d+)'
-_otherRegEx = fr'({_regexComma}(?P<other>.+))*'
-
-class IniComment:
-    regex = re.compile(fr'^\s*(;.*)$')
+class Comment:
+    """A comment line"""
+    REGEX = re.compile(fr'^\s*(;.*)$')
 
     def __init__(self, match):
         self.Comment = match.group(1).strip()
@@ -19,8 +26,9 @@ class IniComment:
     def __str__(self):
         return self.Comment
 
-class IniSection:
-    regex = re.compile(fr'^\s*\[(.+)\]\s*$')
+class Section:
+    """A section line"""
+    REGEX = re.compile(fr'^\s*\[(.+)\]\s*$')
         
     def __init__(self, match):
         self.Section = match.group(1).strip()
@@ -28,7 +36,8 @@ class IniSection:
     def __str__(self):
         return self.Section
 
-class IniField:
+class FieldBase:
+    """Base class for all field types"""
     __types = {
         'S08' : [ 'int8_t', 1 ],
         'S16' : [ 'int16_t', 2 ],
@@ -38,12 +47,13 @@ class IniField:
 
     def __init__(self, match):
         self.Field = match.group('key').strip()
-        self.DataType = IniField.__types[match.group('type').strip()]
+        self.DataType = FieldBase.__types[match.group('type').strip()]
         self.Offset = int(match.group('offset') or -1)
         self.Other = [x.strip() for x in (match.group('other') or "").split(',')]
 
-class IniScalarField(IniField):
-    regex = re.compile(fr'{_keyRegEx}=(?:\s*scalar){_dataTypeRegex}(?:{_fieldOffsetRegex})?{_otherRegEx}')
+class ScalarField(FieldBase):
+    """A scalar field"""
+    REGEX = re.compile(fr'{_keyRegEx}(?:\s*scalar){_dataTypeRegex}(?:{_fieldOffsetRegex})?{_otherRegEx}')
 
     def __init__(self, match):
         super().__init__(match)
@@ -52,8 +62,9 @@ class IniScalarField(IniField):
     def __str__(self):
         return f'{self.Field}=scalar,{self.DataType[0]}'
         
-class IniBitField(IniField):
-    regex = re.compile(fr'{_keyRegEx}=(?:\s*bits){_dataTypeRegex}(?:{_fieldOffsetRegex})?{_regexComma}(?:\[(?P<bitStart>\d+):(?P<bitEnd>\d+)\]){_otherRegEx}')
+class BitField(FieldBase):
+    """A bit field"""
+    REGEX = re.compile(fr'{_keyRegEx}(?:\s*bits){_dataTypeRegex}(?:{_fieldOffsetRegex})?{_regexComma}(?:\[(?P<bitStart>\d+):(?P<bitEnd>\d+)\]){_otherRegEx}')
 
     def __init__(self, match):
         super().__init__(match)
@@ -64,8 +75,9 @@ class IniBitField(IniField):
     def __str__(self):
         return f'{self.Field}=bit,{self.DataType[0]},[{self.BitStart}:{self.BitEnd}]'
 
-class IniTwoDimArrayField(IniField):
-    regex = re.compile(fr'{_keyRegEx}=(?:\s*array){_dataTypeRegex}(?:{_fieldOffsetRegex})?{_regexComma}(?:\[\s*(?P<xDim>\d+)x(?P<yDim>\d+)\s*\]){_otherRegEx}')
+class TwoDimArrayField(FieldBase):
+    """A 2-dimensional array field"""
+    REGEX = re.compile(fr'{_keyRegEx}(?:\s*array){_dataTypeRegex}(?:{_fieldOffsetRegex})?{_regexComma}(?:\[\s*(?P<xDim>\d+)x(?P<yDim>\d+)\s*\]){_otherRegEx}')
 
     def __init__(self, match):
         super().__init__(match)
@@ -76,8 +88,9 @@ class IniTwoDimArrayField(IniField):
     def __str__(self):
         return f'{self.Field}=2d-array,{self.DataType[0]},[{self.xDim}x{self.yDim}]'
 
-class IniOneDimArrayField(IniField):
-    regex = re.compile(fr'{_keyRegEx}=(?:\s*array){_dataTypeRegex}(?:{_fieldOffsetRegex})?{_regexComma}(?:\[\s*(?P<length>\d+)\s*\]){_otherRegEx}')
+class OneDimArrayField(FieldBase):
+    """A 1-dimensional array field"""
+    REGEX = re.compile(fr'{_keyRegEx}(?:\s*array){_dataTypeRegex}(?:{_fieldOffsetRegex})?{_regexComma}(?:\[\s*(?P<length>\d+)\s*\]){_otherRegEx}')
 
     def __init__(self, match):
         super().__init__(match)
@@ -87,8 +100,9 @@ class IniOneDimArrayField(IniField):
     def __str__(self):
         return f'{self.Field}=array,{self.DataType[0]},[{self.Length}]'
 
-class IniString:
-    regex = re.compile(fr'{_keyRegEx}=(?:\s*string){_regexComma}(?P<encoding>.+){_regexComma}(?:\s*(?P<length>\d+))')
+class StringDef:
+    """A string definition"""
+    REGEX = re.compile(fr'{_keyRegEx}(?:\s*string){_regexComma}(?P<encoding>.+){_regexComma}(?:\s*(?P<length>\d+))')
 
     def __init__(self, match):
         self.Field = match.group('key').strip()
@@ -98,8 +112,9 @@ class IniString:
     def __str__(self):
         return f'{self.Field}=string,[{self.Length}]'
 
-class IniKeyValue:
-    regex = re.compile(fr'{_keyRegEx}=\s*(?P<value>.*)\s*$')
+class KeyValue:
+    """A generic key-value pair"""
+    REGEX = re.compile(fr'{_keyRegEx}\s*(?P<value>.*)\s*$')
 
     def __init__(self, match):
         self.Key = match.group('key').strip()
@@ -108,8 +123,9 @@ class IniKeyValue:
     def __str__(self):
         return f'{self.Key}={self.Values}'
 
-class IniDefine:
-    regex = re.compile(fr'^\s*#define\s+(?P<condition>.+)\s*=\s*(?P<value>.+)\s*$')
+class Define:
+    """A #define"""
+    REGEX = re.compile(fr'^\s*#define\s+(?P<condition>.+)\s*=\s*(?P<value>.+)\s*$')
 
     def __init__(self, match):
         self.Condition = match.group('condition').strip()
@@ -118,8 +134,9 @@ class IniDefine:
     def __str__(self):
         return f'{self.Condition}={self.Value}'
 
-class IniBeginIfdef:
-    regex = re.compile(fr'^\s*#if\s+(?P<condition>.*)\s*$')
+class BeginIfdef:
+    """A #if"""
+    REGEX = re.compile(fr'^\s*#if\s+(?P<condition>.*)\s*$')
 
     def __init__(self, match):
         self.Condition = match.group('condition').strip()
@@ -127,14 +144,9 @@ class IniBeginIfdef:
     def __str__(self):
         return f'#if {self.Condition}' 
 
-class IniIfDef:
-    def __init__(self, condition, iflines, elselines):
-        self.Condition = condition
-        self.IfLines = iflines
-        self.ElseLines = elselines
-
-class IniIfDefElse:
-    regex = re.compile(fr'^\s*#else\s*$')
+class IfDefElse:
+    """A #else"""
+    REGEX = re.compile(fr'^\s*#else\s*$')
 
     def __init__(self, match):
         pass
@@ -142,8 +154,9 @@ class IniIfDefElse:
     def __str__(self):
         return f'#else'         
 
-class IniEndIfdef:
-    regex = re.compile(fr'^\s*#endif\s*$')
+class EndIfdef:
+    """A #endif"""
+    REGEX = re.compile(fr'^\s*#endif\s*$')
 
     def __init__(self, match):
         pass
@@ -152,70 +165,101 @@ class IniEndIfdef:
         return f'#endif' 
 
 class UnknownLine:
+    """A line with no parser"""
     def __init__(self, line):
         self.Line = line
 
     def __str__(self):
         return self.Line
 
-def read_tsini(iniFile):
+def parse_tsini(iniFile):
+    """Parses a TS ini file into a collection of objects. One object per line"""
+
     def process_line(line):
         ts_ini_regex_handlers = [
-            IniComment,
-            IniSection,
-            IniScalarField,
-            IniBitField,
-            IniTwoDimArrayField,
-            IniOneDimArrayField,
-            IniString,
-            IniDefine,
-            IniBeginIfdef,
-            IniIfDefElse,
-            IniEndIfdef,
-            IniKeyValue
+            Comment,
+            Section,
+            ScalarField,
+            BitField,
+            TwoDimArrayField,
+            OneDimArrayField,
+            StringDef,
+            Define,
+            BeginIfdef,
+            IfDefElse,
+            EndIfdef,
+            KeyValue
         ]
         for line_type in ts_ini_regex_handlers:
-            match = re.match(line_type.regex, line)
+            match = re.match(line_type.REGEX, line)
             if match:
                 return line_type(match)
 
         return UnknownLine(line)
 
-    def coalesce_ifdefs(group):
+    with open(iniFile, 'r') as f:
+        return [process_line(x) for x in f if None!=x and not str.isspace(x)]
+
+class IfDef:
+    """A complete #if section"""
+    def __init__(self, condition, iflines, elselines):
+        self.Condition = condition
+        self.IfLines = iflines
+        self.ElseLines = elselines
+
+def coalesce_ifdefs(lines):
+    """
+    Find #if/#else/#endif groups and collapse each one into a single object  
+    """
+
+    def coalesce_group(group):
         def coalesce_ifdef(iterable):
             ifdef = more_itertools.first(group)
             iflines, *elselines = more_itertools.split_at(
                             more_itertools.islice_extended(group, 1, -1), 
-                            lambda item: isinstance(item, IniIfDefElse))
-            return [IniIfDef(ifdef.Condition, iflines, elselines[0] if elselines else [])]
+                            lambda item: isinstance(item, IfDefElse))
+            return [IfDef(ifdef.Condition, iflines, elselines[0] if elselines else [])]
 
-        if isinstance(more_itertools.first(group), IniBeginIfdef):
+        if isinstance(more_itertools.first(group), BeginIfdef):
             return coalesce_ifdef(group)
         return group
 
-    # Load and convert
-    with open(iniFile, 'r') as f:
-        lines = [process_line(x) for x in f if None!=x and not str.isspace(x)]
-    if not isinstance(lines[0], IniSection):
-        lines.insert(0, process_line('[None]'))
-
-    # Collapse #if groups into one item
-    ifGroups = more_itertools.collapse(
-                map(coalesce_ifdefs, 
+    return more_itertools.collapse(
+                map(coalesce_group, 
                     more_itertools.split_when(lines, 
-                        lambda itemA, itemB: isinstance(itemB, IniBeginIfdef) or isinstance(itemA, IniEndIfdef)
+                        lambda itemA, itemB: isinstance(itemB, BeginIfdef) or isinstance(itemA, EndIfdef)
                 )))
 
+def read(iniFile):
+    """
+    Read a TunerStudio file into a dictionary.
+
+    INI section names become the dictionary keys. 
+    #if/#else/#endif line groups are collapsed
+    """
+
+    # Parse lines
+    lines = parse_tsini(iniFile)
+    
+    # This is only here to make section grouping code simpler
+    if not isinstance(lines[0], Section):
+        lines.insert(0, Section(re.match(Section.REGEX, '[None]')))
+
+    # Collapse #if groups into one item
+    ifGroups = coalesce_ifdefs(lines)
+
     # Group into sections
-    groups = more_itertools.split_before(ifGroups, lambda item: isinstance(item, IniSection))
+    groups = more_itertools.split_before(ifGroups, lambda item: isinstance(item, Section))
     return { item[0].Section: item[1:] for item in groups}
 
 
-# The INI file allows the addresses of fields to overlap - even for scalar and array fields
-# (bit fields obviously overlap)
-# 
-# This function groups those overlapping fields
 def group_overlapping(fields):
+    """ 
+    Group fields together that have overlapping offsets (addresses)
+
+    The INI file allows the addresses of fields to overlap - even for scalar and array fields
+    (bit fields obviously overlap)
+    """
     def is_overlapping(field1, field2):
         def overlap_helper(field1, field2):
             return (field1.Offset >= field2.Offset) and (field1.Offset <= field2.OffsetEnd)
