@@ -272,12 +272,10 @@ def group_overlapping(fields):
         return overlap_helper(field1, field2) or overlap_helper(field2, field1)
 
     class group_overlap:       
-        def __init__(self):
-            self.group_start = None
+        def __init__(self, item):
+            self.group_start = item
 
         def __call__(self, item):
-            if not self.group_start:
-                self.group_start = item
             # We order by widest item first at any overlapping address
             # So we must compare subsequent items to that first item in the group.
             if is_overlapping(self.group_start, item):
@@ -287,12 +285,13 @@ def group_overlapping(fields):
                 self.group_start = item
                 return True
 
-    return more_itertools.split_before(
-                # The sorting here is critical for the group_overlap algorithm
-                # Sort by start address ascending, then end address descending. I.e. for
-                # any overlapping fields, put the widest field first
-                #
-                # We assume overlaps are distinct and complete. I.e.
-                #  0-7, 6-9 is not allowed in the INI file
-                sorted(fields, key=lambda item: (item.Offset, -item.OffsetEnd)), 
-                group_overlap())
+    # The sorting here is critical for the group_overlap algorithm
+    # Sort by start address ascending, then end address descending. I.e. for
+    # any overlapping fields, put the widest field first
+    #
+    # We assume overlaps are distinct and complete. I.e.
+    #  0-7, 6-9 is not allowed in the INI file
+    fields = sorted(fields, key=lambda item: (item.Offset, -item.OffsetEnd))
+    if fields:
+        return more_itertools.split_before(fields, group_overlap(fields[0]))
+    return fields
