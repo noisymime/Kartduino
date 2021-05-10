@@ -97,9 +97,11 @@ def generate_printpageascii(ts_ini_lines, file):
 
     def is_table(item):
         return isinstance(item, read_tsini.KeyValue) and item.Key == 'table'
-    
-    def is_comment(item):
-        return isinstance(item, read_tsini.Comment)
+
+    def is_actionable(item):
+        return not isinstance(item, read_tsini.Comment) \
+            and not isinstance(item, read_tsini.UnknownLine) \
+            and not isinstance(item, read_tsini.BlankLine)
 
     def is_field(item):
         return isinstance(item, read_tsini.FieldBase)
@@ -115,14 +117,14 @@ def generate_printpageascii(ts_ini_lines, file):
         return f'printPage{page_num}'
 
     # Gather 3D table information - required later   
-    tables = (item for item in ts_ini_lines["TableEditor"] if not is_comment(item))
-    # Group into pages
+    tables = (item for item in ts_ini_lines["TableEditor"] if is_actionable(item))
+    # Group into tables
     tables = { table[0]: table[1:] for table in 
                 (group for group in 
                     more_itertools.split_before(tables, is_table))}
 
     # Find all non-comment lines in the "Constants" section & take one side of any #if 
-    page_lines = more_itertools.collapse((take_if(item) for item in ts_ini_lines["Constants"] if not is_comment(item)))
+    page_lines = more_itertools.collapse((take_if(item) for item in ts_ini_lines["Constants"] if is_actionable(item)))
     # Tag each line with it's table
     field_table_setter = lambda item: setattr(item, 'Table', find_table(tables, item)) or item
     page_lines = (field_table_setter(item) for item in page_lines)

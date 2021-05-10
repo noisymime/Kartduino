@@ -172,6 +172,9 @@ class UnknownLine:
     def __str__(self):
         return self.Line
 
+class BlankLine:
+    """A line with text"""
+        
 def parse_tsini(iniFile):
     """Parses a TS ini file into a collection of objects. One object per line"""
 
@@ -190,6 +193,9 @@ def parse_tsini(iniFile):
             EndIfdef,
             KeyValue
         ]
+        if str.isspace(line):
+            return BlankLine()
+
         for line_type in ts_ini_regex_handlers:
             match = re.match(line_type.REGEX, line)
             if match:
@@ -198,7 +204,7 @@ def parse_tsini(iniFile):
         return UnknownLine(line)
 
     with open(iniFile, 'r') as f:
-        return [process_line(x) for x in f if None!=x and not str.isspace(x)]
+        return [process_line(x) for x in f]
 
 class IfDef:
     """A complete #if section"""
