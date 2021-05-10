@@ -8,6 +8,7 @@
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
   #define BOARD_MAX_DIGITAL_PINS 54 //digital pins +1
   #define BOARD_MAX_IO_PINS 70 //digital pins + analog channels + 1
+  #define BOARD_MAX_ADC_PINS  15 //Number of analog pins
 #ifndef LED_BUILTIN
   #define LED_BUILTIN 13
 #endif
@@ -36,15 +37,18 @@
     #define CORE_TEENSY35
     #define BOARD_H "board_teensy35.h"
     #define SD_LOGGING //SD logging enabled by default for Teensy 3.5 as it has the slot built in
+    #define BOARD_MAX_ADC_PINS  22 //Number of analog pins
   #elif defined(__IMXRT1062__)
     #define CORE_TEENSY41
     #define BOARD_H "board_teensy41.h"
+    #define BOARD_MAX_ADC_PINS  17 //Number of analog pins
   #endif
   #define INJ_CHANNELS 8
   #define IGN_CHANNELS 8
 
 #elif defined(STM32_MCU_SERIES) || defined(ARDUINO_ARCH_STM32) || defined(STM32)
   #define CORE_STM32
+  #define BOARD_MAX_ADC_PINS  NUM_ANALOG_INPUTS-1 //Number of analog pins from core.
   #if defined(STM32F407xx) //F407 can do 8x8 STM32F401/STM32F411 not
    #define INJ_CHANNELS 8
    #define IGN_CHANNELS 8
@@ -100,9 +104,19 @@
 #elif defined(__SAMD21G18A__)
   #define BOARD_H "board_samd21.h"
   #define CORE_SAMD21
+  #define CORE_SAM
+  #define INJ_CHANNELS 4
+  #define IGN_CHANNELS 4
 #elif defined(__SAMC21J18A__)
   #define BOARD_H "board_samc21.h"
   #define CORE_SAMC21
+  #define CORE_SAM
+#elif defined(__SAME51J19A__)
+  #define BOARD_H "board_same51.h"
+  #define CORE_SAME51
+  #define CORE_SAM
+  #define INJ_CHANNELS 8
+  #define IGN_CHANNELS 8
 #else
   #error Incorrect board selected. Please select the correct board (Usually Mega 2560) and upload again
 #endif
@@ -179,6 +193,15 @@
 #define BIT_STATUS3_NSQUIRTS1     5
 #define BIT_STATUS3_NSQUIRTS2     6
 #define BIT_STATUS3_NSQUIRTS3     7
+
+#define BIT_STATUS4_WMI_EMPTY     0 //Indicates whether the WMI tank is empty
+#define BIT_STATUS4_VVT1_ERROR    1 //VVT1 cam angle within limits or not
+#define BIT_STATUS4_VVT2_ERROR    2 //VVT2 cam angle within limits or not
+#define BIT_STATUS4_UNUSED4       3
+#define BIT_STATUS4_UNUSED5       4
+#define BIT_STATUS4_UNUSED6       5
+#define BIT_STATUS4_UNUSED7       6
+#define BIT_STATUS4_UNUSED8       7
 
 #define VALID_MAP_MAX 1022 //The largest ADC value that is valid for the MAP sensor
 #define VALID_MAP_MIN 2 //The smallest ADC value that is valid for the MAP sensor
@@ -362,9 +385,6 @@
 extern const char TSfirmwareVersion[] PROGMEM;
 
 extern const byte data_structure_version; //This identifies the data structure when reading / writing.
-#define NUM_PAGES     15
-extern const uint16_t npage_size[NUM_PAGES]; /**< This array stores the size (in bytes) of each configuration page */
-#define MAP_PAGE_SIZE 288
 
 extern struct table3D fuelTable; //16x16 fuel map
 extern struct table3D fuelTable2; //16x16 fuel map
@@ -374,6 +394,7 @@ extern struct table3D afrTable; //16x16 afr target map
 extern struct table3D stagingTable; //8x8 fuel staging table
 extern struct table3D boostTable; //8x8 boost map
 extern struct table3D vvtTable; //8x8 vvt map
+extern struct table3D vvt2Table; //8x8 vvt2 map
 extern struct table3D wmiTable; //8x8 wmi map
 extern struct table3D trim1Table; //6x6 Fuel trim 1 map
 extern struct table3D trim2Table; //6x6 Fuel trim 2 map
@@ -487,7 +508,7 @@ extern int ignition7StartAngle;
 extern int ignition8StartAngle;
 
 //These are variables used across multiple files
-extern const byte PROGMEM fsIntIndex[31];
+extern const byte PROGMEM fsIntIndex[34];
 extern bool initialisationComplete; //Tracks whether the setup() function has run completely
 extern byte fpPrimeTime; //The time (in seconds, based on currentStatus.secl) that the fuel pump started priming
 extern volatile uint16_t mainLoopCount;
@@ -506,8 +527,16 @@ extern volatile byte toothHistorySerialIndex;
 extern unsigned long currentLoopTime; /**< The time (in uS) that the current mainloop started */
 extern unsigned long previousLoopTime; /**< The time (in uS) that the previous mainloop started */
 extern volatile uint16_t ignitionCount; /**< The count of ignition events that have taken place since the engine started */
-extern byte primaryTriggerEdge;
-extern byte secondaryTriggerEdge;
+//The below shouldn't be needed and probably should be cleaned up, but the Atmel SAM boards use a specific type for the trigger edge values rather than a simple byte/int
+#if defined(CORE_SAMD21)
+  extern PinStatus primaryTriggerEdge;
+  extern PinStatus secondaryTriggerEdge;
+  extern PinStatus tertiaryTriggerEdge;
+#else
+  extern byte primaryTriggerEdge;
+  extern byte secondaryTriggerEdge;
+  extern byte tertiaryTriggerEdge;
+#endif
 extern bigAngle_t CRANK_ANGLE_MAX;
 extern bigAngle_t CRANK_ANGLE_MAX_IGN;
 extern bigAngle_t CRANK_ANGLE_MAX_INJ; //The number of crank degrees that the system track over. 360 for wasted / timed batch and 720 for sequential
@@ -626,15 +655,14 @@ struct statuses {
   int16_t ignLoad;
   int16_t ignLoad2;
   bool fuelPumpOn; /**< Indicator showing the current status of the fuel pump */
-  byte syncLossCounter;
+  volatile byte syncLossCounter;
   byte knockRetard;
   bool knockActive;
   bool toothLogEnabled;
   bool compositeLogEnabled;
-  //int8_t vvt1Angle;
-  long vvt1Angle;
+  int16_t vvt1Angle; //Has to be a long for PID calcs (CL VVT control)
   byte vvt1TargetAngle;
-  byte vvt1Duty;
+  long vvt1Duty; //Has to be a long for PID calcs (CL VVT control)
   uint16_t injAngle;
   byte ASEValue;
   uint16_t vss; /**< Current speed reading. Natively stored in kph and converted to mph in TS if required */
@@ -644,10 +672,10 @@ struct statuses {
   byte oilPressure; /**< Oil pressure in PSI */
   byte engineProtectStatus;
   byte wmiPW;
-  bool wmiEmpty;
-  long vvt2Angle;
+  volatile byte status4;
+  int16_t vvt2Angle; //Has to be a long for PID calcs (CL VVT control)
   byte vvt2TargetAngle;
-  byte vvt2Duty;
+  long vvt2Duty; //Has to be a long for PID calcs (CL VVT control)
   byte outputsStatus;
   byte TS_SD_Status; //TunerStudios SD card status
 };
@@ -903,7 +931,12 @@ struct config4 {
 
   byte engineProtectMaxRPM;
 
-  byte unused4_120[7];
+  int16_t vvt2CL0DutyAng;
+  byte vvt2PWMdir : 1;
+  byte unusedBits4 : 7;
+  byte ANGLEFILTER_VVT;
+
+  byte unused4_124[3];
 
 #if defined(CORE_AVR)
   };
@@ -942,7 +975,7 @@ struct config6 {
   byte useExtBaro : 1;
   byte boostMode : 1; //Simple of full boost control
   byte boostPin : 6;
-  byte VVTasOnOff : 1; //Whether or not to use the VVT table as an on/off map
+  byte unused_bit : 1; //Previously was VVTasOnOff
   byte useEMAP : 1;
   byte voltageCorrectionBins[6]; //X axis bins for voltage correction tables
   byte injVoltageCorrectionValues[6]; //Correction table for injector PW vs battery voltage
@@ -1194,19 +1227,20 @@ struct config10 {
   byte vvtCLKP; //Byte 127
   byte vvtCLKI; //Byte 128
   byte vvtCLKD; //Byte 129
-  int16_t vvtCLMinAng; //Bytes 130-131
-  int16_t vvtCLMaxAng; //Bytes 132-133
+  int16_t vvtCL0DutyAng; //Bytes 130-131
+  uint8_t vvtCLMinAng; //Byte 132
+  uint8_t vvtCLMaxAng; //Byte 133
 
   byte crankingEnrichTaper; //Byte 134
 
   byte fuelPressureEnable : 1;
   byte oilPressureEnable : 1;
   byte oilPressureProtEnbl : 1;
-  byte unused10_135 : 5;
+  byte oilPressurePin : 5;
 
-  byte fuelPressurePin : 4;
-  byte oilPressurePin : 4;
-
+  byte fuelPressurePin : 5;
+  byte unused11_165 : 3;
+  
   int8_t fuelPressureMin;
   byte fuelPressureMax;
   int8_t oilPressureMin;
@@ -1243,8 +1277,8 @@ struct config10 {
   byte vvtCLminDuty;
   byte vvtCLmaxDuty;
   byte vvt2Pin : 6;
-  byte unused11_174_1 : 1;
-  byte unused11_174_2 : 1;
+  byte vvt2Enabled : 1;
+  byte TrigEdgeThrd : 1;
 
   byte fuelTempBins[6];
   byte fuelTempValues[6]; //180
@@ -1409,10 +1443,4 @@ extern struct table2D cltCalibrationTable; /**< A 32 bin array containing the co
 extern struct table2D iatCalibrationTable; /**< A 32 bin array containing the inlet air temperature sensor calibration values */
 extern struct table2D o2CalibrationTable; /**< A 32 bin array containing the O2 sensor calibration values */
 
-static_assert(sizeof(struct config2) == 128, "configPage2 size is not 128");
-static_assert(sizeof(struct config4) == 128, "configPage4 size is not 128");
-static_assert(sizeof(struct config6) == 128, "configPage6 size is not 128");
-static_assert(sizeof(struct config9) == 192, "configPage9 size is not 192");
-static_assert(sizeof(struct config10) == 192, "configPage10 size is not 192");
-static_assert(sizeof(struct config13) == 128, "configPage13 size is not 128");
 #endif // GLOBALS_H
