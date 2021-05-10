@@ -198,7 +198,7 @@ def parse_tsini(iniFile):
             return BlankLine()
 
         for line_type in ts_ini_regex_handlers:
-            match = re.match(line_type.REGEX, line)
+            match = line_type.REGEX.match(line)
             if match:
                 return line_type(match)
 
