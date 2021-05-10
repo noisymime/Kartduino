@@ -30,7 +30,7 @@ OUTPUT_VAR_NAME = 'target'
 def generate_printfields(page_num, fields, file):
     """ Print each field in the page """
     def get_fullfieldname(page_num, field):
-        return f'configPage{page_num}.{field.Field}'
+        return f'configPage{page_num}.{read_tsini.get_code_fieldname(field)}'
 
     def gen_scalar(page_num, field):
         return f'\t{OUTPUT_VAR_NAME}.println({get_fullfieldname(page_num, field)});'

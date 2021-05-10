@@ -50,6 +50,7 @@ class FieldBase:
         self.DataType = FieldBase.__types[match.group('type').strip()]
         self.Offset = int(match.group('offset') or -1)
         self.Other = [x.strip() for x in (match.group('other') or "").split(',')]
+        self.NameOverride = "use_name_parse" in self.Other
 
 class ScalarField(FieldBase):
     """A scalar field"""
@@ -295,3 +296,17 @@ def group_overlapping(fields):
     if fields:
         return more_itertools.split_before(fields, group_overlap(fields[0]))
     return fields
+
+_PARSE_SUBS= [
+    # Array index flag 
+    [ re.compile('_i(?P<index>\d+)_'), '[\g<index>].' ]
+]
+
+def get_code_fieldname(item:FieldBase):
+    """Some field names require additional processing in order to get
+    the equivalent source code variable name"""
+    name = item.Field
+    if item.NameOverride:
+        for sub in _PARSE_SUBS:
+            name = sub[0].sub(sub[1], name)
+    return name
