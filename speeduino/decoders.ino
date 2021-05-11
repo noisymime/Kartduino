@@ -522,24 +522,35 @@ void triggerSec_missingTooth()
   //Record the VVT Angle
   if( (configPage6.vvtEnabled > 0) && (revolutionOne == 1) )
   {
-    int16_t curAngle;
+    bigAngle_t curAngle;
     curAngle = getCrankAngle();
     while(curAngle > scaleCrankAngle(360)) { curAngle -= scaleCrankAngle(360); }
     curAngle -= scaleCrankAngle(configPage4.triggerAngle); //Value at TDC
-    if( configPage6.vvtMode == VVT_MODE_CLOSED_LOOP ) { curAngle -= configPage10.vvtCLMinAng; }
+    if( configPage6.vvtMode == VVT_MODE_CLOSED_LOOP ) { curAngle -= scaleCrankAngle(configPage10.vvtCL0DutyAng); }
 
     currentStatus.vvt1Angle = ANGLE_FILTER( (curAngle << 1), configPage4.ANGLEFILTER_VVT, currentStatus.vvt1Angle);
+    /* This is only for testing spark angles, connect ignition 1 to VVT1 input
+    bigAngle_t curAngle;
+    curAngle = scaleCrankAngle(360) - getCrankAngle(); //Value at TDC
+    if( configPage6.vvtMode == VVT_MODE_CLOSED_LOOP ) { curAngle -= scaleCrankAngle(configPage10.vvtCL0DutyAng); }
+    while(curAngle > scaleCrankAngle(360)) { curAngle -= scaleCrankAngle(360); }
+
+    currentStatus.vvt1Angle = ANGLE_FILTER(curAngle, configPage4.ANGLEFILTER_VVT, currentStatus.vvt1Angle);
+    //Apply this to speeduino.ini
+    //vvt1AngleGauge    = vvt1Angle,     "VVT Angle",          "deg",   -20,  100,      0,    -5,    70,  90, 3, 3
+    //vvt1Angle        = scalar,   S16,    93, "deg",    0.125, 0.000
+    */
   }
 }
 
 void triggerThird_missingTooth()
 {
   //Record the VVT2 Angle (the only purpose of the third trigger)
-  int16_t curAngle;
+  bigAngle_t curAngle;
   curAngle = getCrankAngle();
-  while(curAngle > 360) { curAngle -= 360; }
-  curAngle -= configPage4.triggerAngle; //Value at TDC
-  if( configPage6.vvtMode == VVT_MODE_CLOSED_LOOP ) { curAngle -= configPage4.vvt2CL0DutyAng; }
+  while(curAngle > scaleCrankAngle(360)) { curAngle -= scaleCrankAngle(360); }
+  curAngle -= scaleCrankAngle(configPage4.triggerAngle); //Value at TDC
+  if( configPage6.vvtMode == VVT_MODE_CLOSED_LOOP ) { curAngle -= scaleCrankAngle(configPage4.vvt2CL0DutyAng); }
   //currentStatus.vvt2Angle = int8_t (curAngle); //vvt1Angle is only int8, but +/-127 degrees is enough for VVT control
   currentStatus.vvt2Angle = ANGLE_FILTER( (curAngle << 1), configPage4.ANGLEFILTER_VVT, currentStatus.vvt2Angle);
 }
