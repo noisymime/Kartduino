@@ -50,7 +50,7 @@ def generate_printfields(page_num, fields, file):
         read_tsini.OneDimArrayField: gen_array
     }
 
-    for generator, field in ((print_map.get(type(field), None), field) for field in fields): 
+    for generator, field in ((print_map.get(type(field), gen_unknown), field) for field in fields): 
         print(generator(page_num, field), file=file)
 
 def generate_printtables(tables, file):
