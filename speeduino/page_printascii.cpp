@@ -26,19 +26,25 @@ static void serial_print_space_delimited(Print &target, const _Element *first, c
     target.println();
 }
 
-static void serial_print_prepadding(Print &target, byte value)
+template <typename _Element>
+static void serial_print_prepadding(Print &target, _Element value)
 {
-    if (value < 100)
+    if (value < 1000)
     {
         target.print(F(" "));
-        if (value < 10)
+        if (value < 100)
         {
             target.print(F(" "));
+            if (value < 10)
+            {
+                target.print(F(" "));
+            }
         }
     }
 }
 
-static void serial_print_prepadded_value(Print &target, byte value)
+template <typename _Element>
+static void serial_print_prepadded_value(Print &target, _Element value)
 {
     serial_print_prepadding(target, value);
     target.print(value);
@@ -47,7 +53,7 @@ static void serial_print_prepadded_value(Print &target, byte value)
 
 static void print_row(Print &target, const table_axis_iterator_t &y_it, table_row_t row)
 {
-    serial_print_prepadded_value(target, get_value(y_it));
+    serial_print_prepadded_value(target, get_value16(y_it));
 
     while (!at_end(row))
     {
@@ -58,11 +64,11 @@ static void print_row(Print &target, const table_axis_iterator_t &y_it, table_ro
 
 static void print_x_axis(Print &target, table_axis_iterator_t x_it)
 {
-    target.print(F("    "));
+    target.print(F("     "));
 
     while(!at_end(x_it))
     {
-        serial_print_prepadded_value(target, get_value(x_it));
+        serial_print_prepadded_value(target, get_value16(x_it));
         advance_axis(x_it);
     }
 }
@@ -82,7 +88,7 @@ static void serial_print_3dtable(Print &target, table_row_iterator_t row_it, tab
 
 static void serial_print_3dtable(Print &target, const table3D &currentTable)
 {
-    serial_print_3dtable(target, rows_begin(&currentTable), x_begin(&currentTable), y_begin(&currentTable));
+    serial_print_3dtable(target, rows_begin_rev(&currentTable), x_raw_begin(&currentTable), y_raw_begin_rev(&currentTable));
 }
 
 #define print_array(outputName, array) serial_print_space_delimited(outputName, array, array+_countof(array));
