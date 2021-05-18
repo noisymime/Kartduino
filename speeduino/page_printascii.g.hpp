@@ -34,7 +34,7 @@ static void printPage1(Print &target) {
 	target.println(configPage1.displayB2);
 	target.println(configPage1.reqFuel);
 	target.println(configPage1.divider);
-	target.println(configPage1.injTiming);
+	target.println(configPage1.alternate);
 	target.println(configPage1.multiplyMAP_old);
 	target.println(configPage1.includeAFR);
 	target.println(configPage1.hardCutType);
@@ -43,7 +43,7 @@ static void printPage1(Print &target) {
 	target.println(configPage1.injOpen);
 	print_array(target, configPage1.injAng);
 	target.println(configPage1.mapSample);
-	target.println(configPage1.strokes);
+	target.println(configPage1.twoStroke);
 	target.println(configPage1.injType);
 	target.println(configPage1.nCylinders);
 	target.println(configPage1.algorithm);

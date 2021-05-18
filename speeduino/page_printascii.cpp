@@ -98,6 +98,8 @@ static void serial_print_3dtable(Print &target, const table3D &currentTable)
 // As per INI comment
 // ;Has to be called algorithm for the req fuel calculator to work :(
 #define algorithm fuelAlgorithm
+#define alternate injTiming
+#define twoStroke strokes
 
 // Pull in the generated code.
 #include "page_printascii.g.hpp"
