@@ -1,10 +1,8 @@
 import sys
 import subprocess
 import pkg_resources
-import site
 
 python = sys.executable
-package_path = site.getsitepackages()
 
 installed = [ pkg.key for pkg in pkg_resources.working_set ]
 
