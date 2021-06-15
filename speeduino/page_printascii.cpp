@@ -3,31 +3,43 @@
 #include "table_iterator.h"
 #include "utilities.h"
 
-/// Prints each element in the memory byte range (*first, *last).
-template <typename _Element>
-static void serial_println_range(Print &target, const _Element *first, const _Element *last)
-{
-    while (first!=last)
-    {
-        target.println(*first);
-        ++first;
-    }
-}
+// =============================== Helpers - called by generated code =====================
 
-template <typename _Element>
-static void serial_print_space_delimited(Print &target, const _Element *first, const _Element *last)
+#define PRINT_SPACE_DELIMITED(target, item) \
+        target.print(item);                 \
+        target.print(F(" ")); 
+
+static void serial_print_space_delimited(Print &target, const uint8_t *first, const uint8_t *last)
 {
     while (first!=last)
     {
-        target.print(*first);// This displays the values horizantially on the screen
-        target.print(F(" "));
+        PRINT_SPACE_DELIMITED(target, *first)
         ++first;
     }
     target.println();
 }
 
-template <typename _Element>
-static void serial_print_prepadding(Print &target, _Element value)
+static void serial_print_space_delimited(Print &target, const int16_t *first, const int16_t *last)
+{
+    while (first!=last)
+    {
+        PRINT_SPACE_DELIMITED(target, *first)
+        ++first;
+    }
+    target.println();
+}
+
+static void serial_print_space_delimited(Print &target, const uint16_t *first, const uint16_t *last)
+{
+    while (first!=last)
+    {
+        PRINT_SPACE_DELIMITED(target, *first)
+        ++first;
+    }
+    target.println();
+}
+
+static void serial_print_prepadding(Print &target, uint16_t value)
 {
     if (value < 1000)
     {
@@ -43,8 +55,7 @@ static void serial_print_prepadding(Print &target, _Element value)
     }
 }
 
-template <typename _Element>
-static void serial_print_prepadded_value(Print &target, _Element value)
+static void serial_print_prepadded_value(Print &target, uint16_t value)
 {
     serial_print_prepadding(target, value);
     target.print(value);
