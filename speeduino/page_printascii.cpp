@@ -15,6 +15,7 @@ void printPageAscii(byte pageNum, Print &target)
 
 // =============================== Helpers - called by generated code =====================
 
+#if defined(CORE_AVR)
 #define PRINT_SPACE_DELIMITED(target, item) \
         target.print(item);                 \
         target.print(F(" ")); 
@@ -48,6 +49,13 @@ static void serial_print_space_delimited(Print &target, const uint16_t *first, c
     }
     target.println();
 }
+#define print_array(outputName, array) serial_print_space_delimited(outputName, array, array+_countof(array));
+#else
+// On ARM, the structs are all packed and we can't take the address of a struct member.
+// For the moment, skip printing these
+// TODO: find a way to print array within a packed struct.
+#define print_array(outputName, array)
+#endif
 
 static void serial_print_prepadding(Print &target, uint16_t value)
 {
@@ -111,8 +119,6 @@ static void serial_print_3dtable(Print &target, const table3D &currentTable)
 {
     serial_print_3dtable(target, rows_begin_rev(&currentTable), x_raw_begin(&currentTable), y_raw_begin_rev(&currentTable));
 }
-
-#define print_array(outputName, array) serial_print_space_delimited(outputName, array, array+_countof(array));
 
 // Alias page 2 - it's page 1 in the INI file
 #define configPage1 configPage2
