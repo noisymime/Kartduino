@@ -38,6 +38,11 @@ inline byte get_value(const table_axis_iterator_t &it)
     return *it._pAxis / it._axisFactor;
 }
 
+inline int16_t get_value16(const table_axis_iterator_t &it)
+{
+    return *it._pAxis / it._axisFactor;
+}
+
 inline void set_value(table_axis_iterator_t &it, byte value)
 {
     *it._pAxis = value * it._axisFactor;
@@ -50,10 +55,24 @@ inline table_axis_iterator_t y_begin(const table3D *pTable)
             -1 };
 }
 
+inline table_axis_iterator_t y_raw_begin_rev(const table3D *pTable)
+{
+    return { pTable->axisY,
+            pTable->axisY+(pTable->ySize-1), 
+            1,
+            1 };
+}
+
 inline table_axis_iterator_t x_begin(const table3D *pTable)
 {
     return { pTable->axisX, pTable->axisX+pTable->xSize, getTableXAxisFactor(pTable), 1 };
 } 
+
+
+inline table_axis_iterator_t x_raw_begin(const table3D *pTable)
+{
+    return { pTable->axisX, pTable->axisX+pTable->xSize, 1, 1 };
+}
 
 // ========================= INTRA-ROW ITERATION ========================= 
 
@@ -74,13 +93,24 @@ typedef struct table_row_iterator_t
     byte **pRowsStart;
     byte **pRowsEnd;
     uint8_t rowWidth;
+    int8_t _stride;
 } table_row_iterator_t;
 
 inline table_row_iterator_t rows_begin(const table3D *pTable)
 {
     return {    pTable->values + (pTable->ySize-1),
                 pTable->values - 1,
-                pTable->xSize
+                pTable->xSize,
+                -1
+    };
+};
+
+inline table_row_iterator_t rows_begin_rev(const table3D *pTable)
+{
+    return {    pTable->values,
+                pTable->values + pTable->ySize,
+                pTable->xSize,
+                1
     };
 };
 
@@ -96,6 +126,6 @@ inline table_row_t get_row(const table_row_iterator_t &it)
 
 inline table_row_iterator_t& advance_row(table_row_iterator_t &it)
 {
-    --it.pRowsStart;
+    it.pRowsStart += it._stride;
     return it;
 }
