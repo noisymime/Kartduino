@@ -19,9 +19,9 @@ unsigned long angleToTime(bigAngle_t, byte);
 bigAngle_t timeToAngle(unsigned long, byte);
 void doCrankSpeedCalcs();
 
-volatile uint32_t timePerDegree;
-volatile uint32_t timePerDegreex16;
-volatile uint32_t degreesPeruSx2048;
+volatile bigAngle_t timePerDegree;
+volatile bigAngle_t timePerDegreex16;
+volatile bigAngle_t degreesPeruSx2048;
 volatile unsigned long degreesPeruSx32768;
 
 //These are only part of the experimental 2nd deriv calcs

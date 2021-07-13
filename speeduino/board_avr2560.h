@@ -14,7 +14,7 @@
   #define COMPARE_TYPE uint16_t
   #define COUNTER_TYPE uint16_t
   #define smallAngle_t int16_t //usually in8_t
-  #define bigAngle_t int32_t //usually in16_t
+  #define bigAngle_t int16_t //usually in16_t
   const uint8_t ANGLE_SHIFTS = 3; //2^x
   const uint8_t ANGLE_SHIFT_POWER = (1UL<<ANGLE_SHIFTS); //2^x
   #ifdef USE_SPI_EEPROM
